@@ -1,5 +1,8 @@
 package golf.golf_app_2
 
+import android.graphics.Canvas
+import android.graphics.Paint
+import android.graphics.PixelFormat
 import android.os.Bundle
 import android.support.design.widget.Snackbar
 import android.support.design.widget.NavigationView
@@ -8,16 +11,34 @@ import android.support.v7.app.ActionBarDrawerToggle
 import android.support.v7.app.AppCompatActivity
 import android.view.Menu
 import android.view.MenuItem
+import android.view.View
+import android.widget.Button
+import android.widget.VideoView
 import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.android.synthetic.main.app_bar_main.*
 
+import android.content.Context
+import android.net.Uri
+import android.provider.MediaStore
+import golf.golf_app_2.R.id.videoView1
+import kotlinx.android.synthetic.main.content_main.*
+
 class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelectedListener {
+
+    public var corx = 0f;
+    public var cory = 0f;
+
+    private lateinit var background: Canvass;
+
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
         setSupportActionBar(toolbar)
-        //fab - floating action button (in app_bar_main)
+
+        window.setFormat(PixelFormat.UNKNOWN)
+
+
         fab.setOnClickListener { view ->
             Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
                     .setAction("Action", null).show()
@@ -29,7 +50,42 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         toggle.syncState()
 
         nav_view.setNavigationItemSelectedListener(this)
+        /*
+        val layout1 = findViewById<View>(R.id.constraintLayout) as android.support.constraint.ConstraintLayout
+        val background = Canvass(this)
+        layout1.addView(background)
+        background.setOnTouchListener { view, motionEvent ->
+            corx = motionEvent.x
+            cory = motionEvent.y
+            background.invalidate()
+            true
+        }*/
+
+        configureVideoView()
+
     }
+
+    private fun configureVideoView() {
+        val videoView1 = findViewById<VideoView>(R.id.videoView1) as VideoView
+        val path = "android.resource://" + getPackageName() + "/" + R.raw.swing1
+        videoView1.setVideoURI(Uri.parse(path))
+
+        videoView1.start()
+    }
+
+
+    inner class Canvass(context: Context) : View(context) {
+
+        override fun onDraw(canvas: Canvas) {
+            canvas.drawRGB(255, 255, 0)
+            val paint = Paint()
+            paint.setARGB(255, 255, 0, 0)
+            paint.setStrokeWidth(4f)
+            paint.setStyle(Paint.Style.STROKE)
+            canvas.drawLine(100f, 1500f, corx, cory, paint)
+        }
+    }
+
 
     override fun onBackPressed() {                           //When back is pressed close the drawer
         if (drawer_layout.isDrawerOpen(GravityCompat.START)){ //If layout drawer is open close it
@@ -70,9 +126,12 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
             R.id.nav_manage -> {
 
             }
+            R.id.nav_share -> {
 
+            }
+            R.id.nav_send -> {
 
-
+            }
         }
 
         drawer_layout.closeDrawer(GravityCompat.START)
