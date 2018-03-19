@@ -17,6 +17,8 @@ import kotlinx.android.synthetic.main.app_bar_main.*
 
 class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelectedListener {
 
+    private var mediaController:MediaController? = null
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
@@ -91,20 +93,21 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
      */
     private fun configureVideoView() {
         val videoView1 = findViewById<VideoView>(R.id.videoView1) as VideoView
+        val seekBar1 = findViewById<SeekBar>(R.id.seekBar1) as SeekBar
         val path = "android.resource://" + getPackageName() + "/" + R.raw.swing1       //the path for the video, in project tree under res directory create a raw directory and place video here
         videoView1.setVideoURI(Uri.parse(path))                                        //setting the video uri
-        //videoView1.start()
-       // mediaController = MediaController(this)
-        //mediaController.setAnchorView(videoView1)
-        //videoView1.setMediaController(mediaController
-        //)
+
+        //Setting up a media controller to control the playback of the video
+        mediaController = MediaController(this)
+        mediaController?.setAnchorView(mediaController)
+        videoView1.setMediaController(mediaController)
+
+        //Setting up the OnPreparedListener to continually loop playback each time the video reaches the end
         videoView1.requestFocus()
         videoView1.setOnPreparedListener{ mp ->
             mp.isLooping = true
-            //Log.i("Swing1", "Duration = " + videoView1.duration)
-
-            videoView1.start()
         }
+        videoView1.start()
 
         val button = findViewById<Button>(R.id.button1)
         button.setText(R.string.pause)
@@ -123,20 +126,22 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
     }
     private fun configureSeekBar() {
         val seekBar1 = findViewById<SeekBar>(R.id.seekBar1) as SeekBar
-        //seekBar1.max = 300
-        val videoView1 = findViewById<VideoView>(R.id.videoView1) as VideoView
+        val vv = findViewById<VideoView>(R.id.videoView1) as VideoView
+        seekBar1.max = 300
+
+
 
         seekBar1.setOnSeekBarChangeListener (object : SeekBar.OnSeekBarChangeListener {
             override fun onProgressChanged(seekBar1:SeekBar, progress:Int, fromUser:Boolean ){
 
             }
-            override fun onStartTrackingTouch(seekBar: SeekBar) {
+            override fun onStartTrackingTouch(seekBar1: SeekBar) {
                 // called when tracking the seekbar is started
-                videoView1.pause()
+                vv.pause()
             }
-            override fun onStopTrackingTouch(seekBar: SeekBar) {
+            override fun onStopTrackingTouch(seekBar1: SeekBar) {
                 // called when tracking the seekbar is stopped
-                Toast.makeText(this@MainActivity, "Progress is " + seekBar.progress + "%", Toast.LENGTH_SHORT).show()
+                Toast.makeText(this@MainActivity, "Progress is " + seekBar1.progress, Toast.LENGTH_SHORT).show()
 
             }
         })
