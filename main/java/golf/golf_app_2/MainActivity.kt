@@ -30,7 +30,7 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
 
         nav_view.setNavigationItemSelectedListener(this)
 
-        configureVideoView() //RS - Configuring the video playback of animation
+        configureVideoView(R.raw.swing1) //RS - Configuring the video playback of animation
         configureSeekBar()   //RS - Configuring the seek bar, see method for Listener
     }
 
@@ -63,10 +63,10 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         // Handle navigation view item clicks here.
         when (item.itemId) {
             R.id.nav_swing_1 -> {
-                setSwing1AsPath()
+                configureVideoView(R.raw.swing1)
             }
             R.id.nav_swing_2 -> {
-                setSwing2AsPath()
+                configureVideoView(R.raw.swing2)
             }
             R.id.nav_swing_3 -> {
                 // Handle swing 3 button action
@@ -94,9 +94,9 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
      * Sets the property isLooping to true for videoView1
      * button1 - toggle play and pause
      */
-    private fun configureVideoView() {
+    private fun configureVideoView(vidname : Int) {
         val videoView1 = findViewById<VideoView>(R.id.videoView1) as VideoView
-        val path = "android.resource://" + getPackageName() + "/" + R.raw.swing1       //the path for the video, in project tree under res>raw directory
+        val path = "android.resource://" + getPackageName() + "/" + vidname      //the path for the video, in project tree under res>raw directory
         val seekBar1 = findViewById<SeekBar>(R.id.seekBar1) as SeekBar
         videoView1.setVideoURI(Uri.parse(path))                                        //setting the video uri
 
@@ -146,16 +146,5 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
 
             }
         })
-    }
-
-    private fun setSwing1AsPath(){
-        val videoView1 = findViewById<VideoView>(R.id.videoView1) as VideoView
-        val path = "android.resource://" + getPackageName() + "/" + R.raw.swing1       //the path for the video, in project tree under res directory create a raw directory and place video here
-        videoView1.setVideoURI(Uri.parse(path))
-    }
-    private fun setSwing2AsPath(){
-        val videoView1 = findViewById<VideoView>(R.id.videoView1) as VideoView
-        val path = "android.resource://" + getPackageName() + "/" + R.raw.swing2       //the path for the video, in project tree under res directory create a raw directory and place video here
-        videoView1.setVideoURI(Uri.parse(path))
     }
 }
