@@ -3,36 +3,58 @@
     xmlns:tools="http://schemas.android.com/tools"
     tools:showIn="navigation_view">
 
-    <group android:checkableBehavior="single">
-        <item
-            android:id="@+id/nav_camera"
-            android:icon="@drawable/ic_menu_camera"
-            android:title="Import" />
-        <item
-            android:id="@+id/nav_gallery"
-            android:icon="@drawable/ic_menu_gallery"
-            android:title="Gallery" />
-        <item
-            android:id="@+id/nav_slideshow"
-            android:icon="@drawable/ic_menu_slideshow"
-            android:title="Slideshow" />
-        <item
-            android:id="@+id/nav_manage"
-            android:icon="@drawable/ic_menu_manage"
-            android:title="Tools" />
+    <group
+        android:id="@+id/Swings"
+        android:checkableBehavior="single"
+        android:enabled="true"
+        android:visible="true">
+        <item android:title="Swings">
+            <menu>
+                <item
+                    android:id="@+id/nav_swing_1"
+                    android:icon="@drawable/golf_swing"
+                    android:title="Swing 1" />
+                <item
+                    android:id="@+id/nav_swing_2"
+                    android:icon="@drawable/golf_swing"
+                    android:title="Swing 2" />
+                <item
+                    android:id="@+id/nav_swing_3"
+                    android:icon="@drawable/golf_swing"
+                    android:title="Swing 3" />
+                <item
+                    android:id="@+id/nav_swing_4"
+                    android:icon="@drawable/golf_swing"
+                    android:title="Swing 4" />
+                <item
+                    android:id="@+id/nav_swing_5"
+                    android:icon="@drawable/golf_swing"
+                    android:title="Swing 5" />
+                <item
+                    android:id="@+id/nav_swing_6"
+                    android:icon="@drawable/golf_swing"
+                    android:title="Swing 6" />
+                <item
+                    android:id="@+id/nav_swing_7"
+                    android:icon="@drawable/golf_swing"
+                    android:title="Swing 7" />
+            </menu>
+        </item>
     </group>
 
-    <item android:title="Communicate">
-        <menu>
-            <item
-                android:id="@+id/nav_share"
-                android:icon="@drawable/ic_menu_share"
-                android:title="Share" />
-            <item
-                android:id="@+id/nav_send"
-                android:icon="@drawable/ic_menu_send"
-                android:title="Send" />
-        </menu>
-    </item>
+    <group
+        android:id="@+id/Other"
+        android:checkableBehavior="single"
+        android:enabled="true"
+        android:visible="true">
+        <item android:title="Other">
+            <menu>
+                <item
+                    android:id="@+id/nav_settings"
+                    android:icon="@drawable/ic_menu_manage"
+                    android:title="Settings" />
+            </menu>
+        </item>
+    </group>
 
 </menu>
