@@ -1,48 +1,27 @@
 package golf.golf_app_2
 
-import android.graphics.Canvas
-import android.graphics.Paint
-import android.graphics.PixelFormat
+import android.media.MediaPlayer
+import android.net.Uri
 import android.os.Bundle
-import android.support.design.widget.Snackbar
 import android.support.design.widget.NavigationView
 import android.support.v4.view.GravityCompat
 import android.support.v7.app.ActionBarDrawerToggle
 import android.support.v7.app.AppCompatActivity
 import android.view.Menu
 import android.view.MenuItem
-import android.view.View
-import android.widget.Button
-import android.widget.VideoView
+import android.widget.*
 import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.android.synthetic.main.app_bar_main.*
-
-import android.content.Context
-import android.net.Uri
-import android.provider.MediaStore
-import golf.golf_app_2.R.id.videoView1
 import kotlinx.android.synthetic.main.content_main.*
 
 class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelectedListener {
 
-    public var corx = 0f;
-    public var cory = 0f;
-
-    private lateinit var background: Canvass;
-
+    private var mediaController:MediaController? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
         setSupportActionBar(toolbar)
-
-        window.setFormat(PixelFormat.UNKNOWN)
-
-
-        fab.setOnClickListener { view ->
-            Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
-                    .setAction("Action", null).show()
-        }
 
         val toggle = ActionBarDrawerToggle(
                 this, drawer_layout, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close)
@@ -50,42 +29,10 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         toggle.syncState()
 
         nav_view.setNavigationItemSelectedListener(this)
-        /*
-        val layout1 = findViewById<View>(R.id.constraintLayout) as android.support.constraint.ConstraintLayout
-        val background = Canvass(this)
-        layout1.addView(background)
-        background.setOnTouchListener { view, motionEvent ->
-            corx = motionEvent.x
-            cory = motionEvent.y
-            background.invalidate()
-            true
-        }*/
 
-        configureVideoView()
-
+        configureVideoView() //RS - Configuring the video playback of animation
+        configureSeekBar()   //RS - Configuring the seek bar, see method for Listener
     }
-
-    private fun configureVideoView() {
-        val videoView1 = findViewById<VideoView>(R.id.videoView1) as VideoView
-        val path = "android.resource://" + getPackageName() + "/" + R.raw.swing1
-        videoView1.setVideoURI(Uri.parse(path))
-
-        videoView1.start()
-    }
-
-
-    inner class Canvass(context: Context) : View(context) {
-
-        override fun onDraw(canvas: Canvas) {
-            canvas.drawRGB(255, 255, 0)
-            val paint = Paint()
-            paint.setARGB(255, 255, 0, 0)
-            paint.setStrokeWidth(4f)
-            paint.setStyle(Paint.Style.STROKE)
-            canvas.drawLine(100f, 1500f, corx, cory, paint)
-        }
-    }
-
 
     override fun onBackPressed() {                           //When back is pressed close the drawer
         if (drawer_layout.isDrawerOpen(GravityCompat.START)){ //If layout drawer is open close it
@@ -111,30 +58,104 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         }
     }
 
+
     override fun onNavigationItemSelected(item: MenuItem): Boolean {
         // Handle navigation view item clicks here.
         when (item.itemId) {
-            R.id.nav_camera -> {
-                // Handle the camera action
+            R.id.nav_swing_1 -> {
+                setSwing1AsPath()
             }
-            R.id.nav_gallery -> {
-
+            R.id.nav_swing_2 -> {
+                setSwing2AsPath()
             }
-            R.id.nav_slideshow -> {
-
+            R.id.nav_swing_3 -> {
+                // Handle swing 3 button action
             }
-            R.id.nav_manage -> {
-
+            R.id.nav_swing_4 -> {
+                // Handle swing 4 button action
             }
-            R.id.nav_share -> {
-
+            R.id.nav_swing_5 -> {
+                // Handle swing 5 button action
             }
-            R.id.nav_send -> {
-
+            R.id.nav_swing_6 -> {
+                // Handle swing 6 button action
+            }
+            R.id.nav_swing_7 -> {
+                // Handle swing 7 button action
+            }
+            R.id.nav_settings -> {
+                // Handle settings button action
             }
         }
-
         drawer_layout.closeDrawer(GravityCompat.START)
         return true
+    }
+    /* configureVideoView - called onCreate, sets swing1 as the path.
+     * Sets the property isLooping to true for videoView1
+     * button1 - toggle play and pause
+     */
+    private fun configureVideoView() {
+        val videoView1 = findViewById<VideoView>(R.id.videoView1) as VideoView
+        val path = "android.resource://" + getPackageName() + "/" + R.raw.swing1       //the path for the video, in project tree under res>raw directory
+        val seekBar1 = findViewById<SeekBar>(R.id.seekBar1) as SeekBar
+        videoView1.setVideoURI(Uri.parse(path))                                        //setting the video uri
+
+        //Setting up a media controller to control the playback of the video
+        mediaController = MediaController(this)
+        mediaController?.setAnchorView(videoView1)
+        videoView1.setMediaController(mediaController)
+
+        //Setting up the OnPreparedListener to continually loop playback each time the video reaches the end
+        videoView1.requestFocus()
+        videoView1.setOnPreparedListener{ mp ->
+            mp.isLooping = true
+        }
+        videoView1.start()
+
+        //Setting up a click listener for button1, if isPlaying -> pause, else -> play
+        val button = findViewById<Button>(R.id.button1)
+        button.setText(R.string.pause)
+        button.setOnClickListener({
+            val isPlaying = videoView1.isPlaying
+            button.setText(if (isPlaying) R.string.play else R.string.pause)
+            val msg = getString(if (isPlaying) R.string.paused else R.string.playing)
+            Toast.makeText(this@MainActivity, msg, Toast.LENGTH_SHORT).show()
+
+            if(isPlaying){
+                videoView1.pause()
+            } else {
+                videoView1.start()
+            }
+        })
+    }
+    private fun configureSeekBar() {
+        val seekBar1 = findViewById<SeekBar>(R.id.seekBar1) as SeekBar
+        val vv = findViewById<VideoView>(R.id.videoView1) as VideoView
+        seekBar1.max = 300
+
+        seekBar1.setOnSeekBarChangeListener (object : SeekBar.OnSeekBarChangeListener {
+            override fun onProgressChanged(seekBar1:SeekBar, progress:Int, fromUser:Boolean ){
+            }
+            override fun onStartTrackingTouch(seekBar1: SeekBar) {
+                // called when tracking the seekbar is started
+                vv.pause()
+            }
+            override fun onStopTrackingTouch(seekBar1: SeekBar) {
+                // called when tracking the seekbar is stopped
+                Toast.makeText(this@MainActivity, "Progress is " + seekBar1.progress, Toast.LENGTH_SHORT).show()
+
+            }
+        })
+    }
+
+    private fun setSwing1AsPath(){
+        val videoView1 = findViewById<VideoView>(R.id.videoView1) as VideoView
+        val path = "android.resource://" + getPackageName() + "/" + R.raw.swing1       //the path for the video, in project tree under res directory create a raw directory and place video here
+        videoView1.setVideoURI(Uri.parse(path))
+    }
+    private fun setSwing2AsPath(){
+        val videoView1 = findViewById<VideoView>(R.id.videoView1) as VideoView
+        val path = "android.resource://" + getPackageName() + "/" + R.raw.swing2       //the path for the video, in project tree under res directory create a raw directory and place video here
+        videoView1.setVideoURI(Uri.parse(path))
     }
 }
