@@ -30,7 +30,7 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
 
         nav_view.setNavigationItemSelectedListener(this)
 
-        configureVideoView(R.raw.swing1) //RS - Configuring the video playback of animation
+        configureVideoView(R.raw.swing1, R.string.front) //RS - Configuring the video playback of animation
         configureSeekBar()   //RS - Configuring the seek bar, see method for Listener
     }
 
@@ -63,10 +63,10 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         // Handle navigation view item clicks here.
         when (item.itemId) {
             R.id.nav_swing_1 -> {
-                configureVideoView(R.raw.swing1)
+                configureVideoView(R.raw.swing1, R.string.front)
             }
             R.id.nav_swing_2 -> {
-                configureVideoView(R.raw.swing2)
+                configureVideoView(R.raw.swing2, R.string.front)
             }
             R.id.nav_swing_3 -> {
                 // Handle swing 3 button action
@@ -94,7 +94,7 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
      * Sets the property isLooping to true for videoView1
      * button1 - toggle play and pause
      */
-    private fun configureVideoView(vidname : Int) {
+    private fun configureVideoView(vidname : Int, view : Int) {
         val videoView1 = findViewById<VideoView>(R.id.videoView1) as VideoView
         val path = "android.resource://" + getPackageName() + "/" + vidname      //the path for the video, in project tree under res>raw directory
         val seekBar1 = findViewById<SeekBar>(R.id.seekBar1) as SeekBar
@@ -126,6 +126,13 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
             } else {
                 videoView1.start()
             }
+        })
+        
+        //Setting up a click listener for changeviewbutton, call configureVideoView based on what view is set to
+        val viewbutton = findViewById<Button>(R.id.changeviewbutton)
+        viewbutton.setText(if (view == R.string.front) R.string.top else R.string.front)
+        viewbutton.setOnClickListener({
+            if (view == R.string.front) configureVideoView(vidname, R.string.top) else configureVideoView(vidname, R.string.front)
         })
     }
     private fun configureSeekBar() {
