@@ -1,0 +1,26 @@
+<resources>
+    <string name="app_name">golf_app_2</string>
+    <string name="leftFoot">LEFT FOOT</string>
+    <string name="rightFoot">RIGHT FOOT</string>
+    <string name="resultant">RESULTANT</string>
+    <string name="zeros">000</string>
+    <string name="play">Play</string>
+    <string name="pause">Pause</string>
+    <string name="paused">Paused…</string>
+    <string name="playing">Playing…</string>
+    <string name="navigation_drawer_open">Open navigation drawer</string>
+    <string name="navigation_drawer_close">Close navigation drawer</string>
+    <string name="front">Front</string>
+    <string name="overhead">Overhead</string>
+    <string name="next">Next</string>
+    <string name="previous">Previous</string>
+    <string name="takeAway">TAKE AWAY</string>
+    <string name="ebs">EBS</string>
+    <string name="lbs">LBS</string>
+    <string name="top">TOP</string>
+    <string name="eds">EDS</string>
+    <string name="lds">LDS</string>
+    <string name="impact">IMPACT</string>
+
+    <string name="action_settings">Settings</string>
+</resources>
