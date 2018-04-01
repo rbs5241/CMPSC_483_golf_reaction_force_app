@@ -21,6 +21,12 @@
     <string name="eds">EDS</string>
     <string name="lds">LDS</string>
     <string name="impact">IMPACT</string>
+    <string name="swing1">SWING 1</string>
+    <string name="swing2">SWING 2</string>
+    <string name="swing3">SWING 3</string>
+    <string name="swing4">SWING 4</string>
+    <string name="swing5">SWING 5</string>
+    <string name="swing6">SWING 6</string>
 
     <string name="action_settings">Settings</string>
 </resources>

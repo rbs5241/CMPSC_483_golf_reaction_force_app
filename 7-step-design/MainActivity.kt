@@ -21,12 +21,12 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
 
     private var mediaController:MediaController? = null
     private var frame = 0
-    private var isSw1Front = false
+    private var isSw1Front = true
     private var isSw2Front = false
     private var isSw3Front = false
     private var isSw4Front = false
     private var isSw5Front = false
-    private var isSw6Front = true
+    private var isSw6Front = false
 
     private var isSw1Top = false
     private var isSw2Top = false
@@ -36,15 +36,36 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
     private var isSw6Top = false
 
 
+    //SWING 1 ******************************
+    private val sw1Front = arrayOf(R.raw.sw1_front_1, R.raw.sw1_front_2, R.raw.sw1_front_3,R.raw.sw1_front_4,
+            R.raw.sw1_front_5, R.raw.sw1_front_6,R.raw.sw1_front_7)
+    //array pointing the images for top swing
+    private val sw1Top = arrayOf(R.raw.sw1_top_1, R.raw.sw1_top_2, R.raw.sw1_top_3,R.raw.sw1_top_4,
+            R.raw.sw1_top_5, R.raw.sw1_top_6,R.raw.sw1_top_7)
 
-    //array pointing to the images for front swing
+    //SWING 2 ********************************
     private val sw2Front = arrayOf(R.raw.sw2_front_1, R.raw.sw2_front_2, R.raw.sw2_front_3,R.raw.sw2_front_4,
             R.raw.sw2_front_5, R.raw.sw2_front_6,R.raw.sw2_front_7)
     //array pointing the images for top swing
     private val sw2Top = arrayOf(R.raw.sw2_top_1, R.raw.sw2_top_2, R.raw.sw2_top_3,R.raw.sw2_top_4,
             R.raw.sw2_top_5, R.raw.sw2_top_6,R.raw.sw2_top_7)
 
-    //array pointing to the images for front swing
+    //SWING 3********************************
+    private val sw3Front = arrayOf(R.raw.sw3_front_1, R.raw.sw3_front_2, R.raw.sw3_front_3,R.raw.sw3_front_4,
+            R.raw.sw3_front_5, R.raw.sw3_front_6,R.raw.sw3_front_7)
+    //array pointing the images for top swing
+    private val sw3Top = arrayOf(R.raw.sw3_top_1, R.raw.sw3_top_2, R.raw.sw3_top_3,R.raw.sw3_top_4,
+            R.raw.sw3_top_5, R.raw.sw3_top_6,R.raw.sw3_top_7)
+
+    //SWING 4 *******************************
+    private val sw4Front = arrayOf(R.raw.sw4_front_1, R.raw.sw4_front_2, R.raw.sw4_front_3,R.raw.sw4_front_4,
+            R.raw.sw4_front_5, R.raw.sw4_front_6,R.raw.sw4_front_7)
+    //array pointing the images for top swing
+    private val sw4Top = arrayOf(R.raw.sw4_top_1, R.raw.sw4_top_2, R.raw.sw4_top_3,R.raw.sw4_top_4,
+            R.raw.sw4_top_5, R.raw.sw4_top_6,R.raw.sw4_top_7)
+    //SING 5 ********************************
+
+    //SWING 6 *******************************
     private val sw6Front = arrayOf(R.raw.sw6_front_1, R.raw.sw6_front_2, R.raw.sw6_front_3,R.raw.sw6_front_4,
             R.raw.sw6_front_5, R.raw.sw6_front_6,R.raw.sw6_front_7)
     //array pointing the images for top swing
@@ -53,6 +74,8 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
 
     private val swingStrings = arrayOf (R.string.takeAway, R.string.ebs, R.string.lbs,
             R.string.top, R.string.eds, R.string.lds, R.string.impact)
+    private val swingTitles = arrayOf (R.string.swing1, R.string.swing2, R.string.swing3, R.string.swing4,
+            R.string.swing5, R.string.swing6)
 
     private val sw6LeftX = arrayOf(280.205616, 262.431496,217.527115,247.680046,228.995918,245.533455,291.902302)
     private val sw6LeftY = arrayOf(135.052826, 141.040527, 192.400925, 273.311798,228.903,56.069366,78.753601)
@@ -74,7 +97,7 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         //configureVideoView(R.raw.swing1, R.string.front) //RS - Configuring the video playback of animation
         //configureSeekBar()   //RS - Configuring the seek bar, see method for Listener
         configureDrawing()
-        configureImageView(R.raw.sw6_front_1)
+        configureImageView(R.raw.sw1_front_1) //initialize to sw1 front
         setNextAndPrevButtons(0)
     }
     override fun onBackPressed() {                           //When back is pressed close the drawer
@@ -105,11 +128,9 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
      */
     private fun configureImageView(image : Int){
         val imageView1 = findViewById<ImageView>(R.id.imView1)
-        //val path = "android.resource://" + getPackageName() + "/" + image
-        //imageView1.setImageURI(Uri.parse(path))
+        val swingString = findViewById<TextView>(R.id.swingString)
         imageView1.setImageResource(image)
-
-
+        swingString.setText(swingStrings[frame])
     }
 
     /* configureDrawing (RS) -
@@ -122,31 +143,49 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         val backwardButton = findViewById<Button>(R.id.backward) as Button
         val changeViewButton = findViewById<Button>(R.id.changeViewButton) as Button
 
-        val swingString = findViewById<TextView>(R.id.swingString)
-
         forwardButton.setText(R.string.next)
         forwardButton.setOnClickListener({
             if (frame == 6){ frame = 0 } else { frame += 1 }
             configureDrawing()
+            if (isSw1Front){configureImageView(sw1Front[frame])}
             if (isSw2Front){configureImageView(sw2Front[frame])}
+            if (isSw3Front){configureImageView(sw3Front[frame])}
+            if (isSw4Front){configureImageView(sw4Front[frame])}
             if (isSw6Front){configureImageView(sw6Front[frame])}
+            if (isSw1Top){configureImageView(sw1Top[frame])}
             if (isSw2Top){configureImageView(sw2Top[frame])}
+            if (isSw3Top){configureImageView(sw3Top[frame])}
+            if (isSw4Top){configureImageView(sw4Top[frame])}
             if (isSw6Top){configureImageView(sw6Top[frame])}
-            swingString.setText(swingStrings[frame])
         })
         backwardButton.setText(R.string.previous)
         backwardButton.setOnClickListener({
             if (frame == 0){ frame = 6 } else { frame -= 1 }
             configureDrawing()
+            if (isSw1Front){configureImageView(sw1Front[frame])}
             if (isSw2Front){configureImageView(sw2Front[frame])}
+            if (isSw3Front){configureImageView(sw3Front[frame])}
+            if (isSw4Front){configureImageView(sw4Front[frame])}
             if (isSw6Front){configureImageView(sw6Front[frame])}
-
+            if (isSw1Top){configureImageView(sw1Top[frame])}
             if (isSw2Top){configureImageView(sw2Top[frame])}
+            if (isSw3Top){configureImageView(sw3Top[frame])}
+            if (isSw4Top){configureImageView(sw4Top[frame])}
             if (isSw6Top){configureImageView(sw6Top[frame])}
-            swingString.setText(swingStrings[frame])
         })
         changeViewButton.setText(R.string.overhead)
         changeViewButton.setOnClickListener({
+            if (isSw1Front){/*top*/
+                changeViewButton.setText(R.string.front)
+                isSw1Front = false
+                isSw1Top = true
+                configureImageView(sw1Top[frame])
+            } else if (isSw1Top) {/*front*/
+                changeViewButton.setText(R.string.overhead)
+                isSw1Front = true
+                isSw1Top = false
+                configureImageView(sw1Front[frame])
+            }
             if (isSw2Front){/*top*/
                 changeViewButton.setText(R.string.front)
                 isSw2Front = false
@@ -157,6 +196,28 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
                 isSw2Front = true
                 isSw2Top = false
                 configureImageView(sw2Front[frame])
+            }
+            if (isSw3Front){/*top*/
+                changeViewButton.setText(R.string.front)
+                isSw3Front = false
+                isSw3Top = true
+                configureImageView(sw3Top[frame])
+            } else if (isSw3Top) {/*front*/
+                changeViewButton.setText(R.string.overhead)
+                isSw3Front = true
+                isSw3Top = false
+                configureImageView(sw3Front[frame])
+            }
+            if (isSw4Front){/*top*/
+                changeViewButton.setText(R.string.front)
+                isSw4Front = false
+                isSw4Top = true
+                configureImageView(sw4Top[frame])
+            } else if (isSw4Top) {/*front*/
+                changeViewButton.setText(R.string.overhead)
+                isSw4Front = true
+                isSw4Top = false
+                configureImageView(sw4Front[frame])
             }
             if (isSw6Front){/*top*/
                 changeViewButton.setText(R.string.front)
@@ -209,16 +270,18 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
     }
     override fun onNavigationItemSelected(item: MenuItem): Boolean {
         // Handle navigation view item clicks here.
+        val swingTitle = findViewById<TextView>(R.id.swingTitle)
         when (item.itemId) {
             R.id.nav_swing_1 -> {
-                //configureImageView(sw2Top[frame])
-                isSw1Front = false
+                swingTitle.setText(swingTitles[0])
+                frame = 0
+                configureImageView(sw1Front[0])
+                isSw1Front = true
                 isSw2Front = false
                 isSw3Front = false
                 isSw4Front = false
                 isSw5Front = false
                 isSw6Front = false
-
                 isSw1Top = false
                 isSw2Top = false
                 isSw3Top = false
@@ -227,6 +290,8 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
                 isSw6Top = false
             }
             R.id.nav_swing_2 -> {
+                swingTitle.setText(swingTitles[1])
+                frame = 0
                 configureImageView(sw2Front[0])
                 isSw1Front = false
                 isSw2Front = true
@@ -244,9 +309,12 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
             }
             R.id.nav_swing_3 -> {
                 // Handle swing 3 button action
+                swingTitle.setText(swingTitles[2])
+                frame = 0
+                configureImageView(sw3Front[0])
                 isSw1Front = false
                 isSw2Front = false
-                isSw3Front = false
+                isSw3Front = true
                 isSw4Front = false
                 isSw5Front = false
                 isSw6Front = false
@@ -260,10 +328,13 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
             }
             R.id.nav_swing_4 -> {
                 // Handle swing 4 button action
+                swingTitle.setText(swingTitles[3])
+                frame = 0
+                configureImageView(sw4Front[0])
                 isSw1Front = false
                 isSw2Front = false
                 isSw3Front = false
-                isSw4Front = false
+                isSw4Front = true
                 isSw5Front = false
                 isSw6Front = false
 
@@ -276,6 +347,8 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
             }
             R.id.nav_swing_5 -> {
                 // Handle swing 5 button action
+                swingTitle.setText(swingTitles[4])
+                frame = 0
                 isSw1Front = false
                 isSw2Front = false
                 isSw3Front = false
@@ -292,6 +365,8 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
             }
             R.id.nav_swing_6 -> {
                 // Handle swing 6 button action
+                swingTitle.setText(swingTitles[5])
+                frame = 0
                 configureImageView(sw6Front[0])
                 isSw1Front = false
                 isSw2Front = false
@@ -299,22 +374,6 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
                 isSw4Front = false
                 isSw5Front = false
                 isSw6Front = true
-
-                isSw1Top = false
-                isSw2Top = false
-                isSw3Top = false
-                isSw4Top = false
-                isSw5Top = false
-                isSw6Top = false
-            }
-            R.id.nav_swing_7 -> {
-                // Handle swing 7 button action
-                isSw1Front = false
-                isSw2Front = false
-                isSw3Front = false
-                isSw4Front = false
-                isSw5Front = false
-                isSw6Front = false
 
                 isSw1Top = false
                 isSw2Top = false
