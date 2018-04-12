@@ -17,8 +17,10 @@ import kotlinx.android.synthetic.main.app_bar_main.*
 import android.R.id.toggle
 import android.annotation.TargetApi
 import android.content.Context
+import android.content.res.Resources
 import android.graphics.*
 import android.util.AttributeSet
+import android.util.DisplayMetrics
 import android.util.Log
 import android.widget.ToggleButton
 import golf.golf_app_2.R.id.drawer_layout
@@ -44,9 +46,8 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
     private var isSw5Top = false
     private var isSw6Top = false
 
-    // leave height and width at 1000 until it fails
-    private val bitmapWidth = 1000
-    private val bitmapHeight = 1000
+    // get dimensions of bitmap
+    private val bitmapWidth = minOf(Resources.getSystem().getDisplayMetrics().heightPixels, Resources.getSystem().getDisplayMetrics().widthPixels)
 
     // keep track of endpoints of left and right force arrows
     lateinit var swingLeftXY:IntArray
@@ -412,16 +413,20 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
     }
 
     // Used for drawing arrows
-     class arrowCanvas(c: Context, attrs: AttributeSet):ImageView(c, attrs) {
+    class arrowCanvas(c: Context, attrs: AttributeSet):ImageView(c, attrs) {
+
         // get screen size
         val mHeight = Resources.getSystem().getDisplayMetrics().heightPixels
         val mWidth = Resources.getSystem().getDisplayMetrics().widthPixels
+
+
         val bitmap = Bitmap.createBitmap( // set to 1000 until it fails
-                mWidth,
-                mWidth,
+                minOf(mWidth, mHeight),
+                minOf(mWidth, mHeight),
                 Bitmap.Config.ARGB_8888
         )
         val canvas:Canvas
+
         internal var context:Context
         init {
             context = c
@@ -434,7 +439,6 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
             return this.canvas
         }
     }
-
 
     // Used to keep pairs of coordinates
     class Coordinates {
@@ -493,9 +497,9 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         println("bitmapX: " + bitmapX)
         println("bitmapY: " + bitmapY)
 
-        if ((x < 8) || (x > (bitmapWidth - 8)))
+        if ((x < 5) || (x > (bitmapWidth - 5)))
             return false
-        else if ((y < 8) || (y > (bitmapHeight - 8)))
+        else if ((y < 5) || (y > (bitmapWidth - 5)))
             return false
         else return true
     }
@@ -529,22 +533,22 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
                 MotionEvent.ACTION_MOVE -> {
                     println("ACTION_MOVE")
 
-                        if (selectedForce != -1) {  // don't do anything if no force selected
-                            if (inBitmap(touchPoint)) {
-                                configureDrawing(selectedForce, touchPoint)
-                                v.invalidate()
-                            } else { // act as if action_up happened
-                                if (selectedForce == 0) {
-                                    swingLeftXY[0] = xTouch.toInt()
-                                    swingLeftXY[1] = yTouch.toInt()
-                                } else if (selectedForce == 1) {
-                                    swingRightXY[0] = xTouch.toInt()
-                                    swingRightXY[1] = yTouch.toInt()
-                                }
-                                selectedForce = -1
-                            }
+                    if (selectedForce != -1) {  // don't do anything if no force selected
+                        if (inBitmap(touchPoint)) {
+                            configureDrawing(selectedForce, touchPoint)
                             v.invalidate()
+                        } else { // act as if action_up happened
+                            if (selectedForce == 0) {
+                                swingLeftXY[0] = xTouch.toInt()
+                                swingLeftXY[1] = yTouch.toInt()
+                            } else if (selectedForce == 1) {
+                                swingRightXY[0] = xTouch.toInt()
+                                swingRightXY[1] = yTouch.toInt()
+                            }
+                            selectedForce = -1
                         }
+                        v.invalidate()
+                    }
                 }
                 MotionEvent.ACTION_UP -> {
                     println("ACTION_UP")
