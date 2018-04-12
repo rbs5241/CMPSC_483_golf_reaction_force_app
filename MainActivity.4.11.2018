@@ -308,6 +308,8 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
                     leftY.toFloat(), //stop  Y
                     paint
             )
+            paint.style = Paint.Style.FILL
+            canvas.drawCircle(leftX.toFloat(), leftY.toFloat(), (15).toFloat(), paint)
             // now still have to repaint old blue and yellow arrows
             paint.color = BLUE
             canvas.drawLine(
@@ -317,6 +319,9 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
                     swingRightXY[1].toFloat(), //stop y
                     paint
             )
+            paint.style = Paint.Style.FILL
+            canvas.drawCircle(swingRightXY[0].toFloat(), swingRightXY[1].toFloat(), (15).toFloat(), paint)
+
         }
         else {
             println("right arrow moving in configureDrawing")
@@ -331,6 +336,8 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
                     rightY.toFloat(), //stop y
                     paint
             )
+            paint.style = Paint.Style.FILL
+            canvas.drawCircle(rightX.toFloat(), rightY.toFloat(), (15).toFloat(), paint)
             // now still have to repaint old red and yellow arrows
             paint.color = RED
             canvas.drawLine(
@@ -340,6 +347,9 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
                     swingLeftXY[1].toFloat(), //stop  Y
                     paint
             )
+            paint.style = Paint.Style.FILL
+            canvas.drawCircle(swingLeftXY[0].toFloat(), swingLeftXY[1].toFloat(), (15).toFloat(), paint)
+
         }
         mCanvas.bringToFront()
     }
@@ -366,7 +376,7 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         paint.style = Paint.Style.STROKE
         paint.strokeWidth = 8.toFloat()
         paint.isAntiAlias = true
-
+        paint.style = Paint.Style.FILL
         canvas.drawLine(
                 280.toFloat(),  //start X
                 430.toFloat(),  //start Y
@@ -374,6 +384,14 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
                 sw6LeftY[frame].toFloat(), //stop  Y
                 paint
         )
+
+        // set position of endpoints
+        swingLeftXY[0] = sw6LeftX[frame].toInt()
+        swingLeftXY[1] = sw6LeftY[frame].toInt()
+
+        // draw bounding circle
+        canvas.drawCircle(sw6LeftX[frame].toFloat(), sw6LeftY[frame].toFloat(), (15).toFloat(), paint)
+
         paint.color = BLUE
 
         canvas.drawLine(
@@ -383,6 +401,10 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
                 sw6RightY[frame].toFloat(), //stop y
                 paint
         )
+        canvas.drawCircle(sw6RightX[frame].toFloat(), sw6RightY[frame].toFloat(), (15).toFloat(), paint)
+
+        swingRightXY[0] = sw6RightX[frame].toInt()
+        swingRightXY[1] = sw6RightY[frame].toInt()
         //mImageView.setImageBitmap(bitmap)
         //mImageView.bringToFront()
         mCanvas.setImageBitmap(mCanvas.getMyBitMap())
@@ -409,6 +431,11 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
             return this.canvas
         }
     }
+
+
+
+
+
 
     // Used to keep pairs of coordinates
     class Coordinates {
@@ -467,9 +494,9 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         println("bitmapX: " + bitmapX)
         println("bitmapY: " + bitmapY)
 
-        if ((x < 0) || (x > bitmapWidth))
+        if ((x < 8) || (x > (bitmapWidth - 8)))
             return false
-        else if ((y < 0) || (y > + bitmapHeight))
+        else if ((y < 8) || (y > (bitmapHeight - 8)))
             return false
         else return true
     }
@@ -484,7 +511,7 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
             val rightCoords:Coordinates = getRightEndpoints()
 
             if (inBitmap(touchPoint)) {
-                bitmapCoords.setText("(" + xTouch + ", " + yTouch + ")")
+                bitmapCoords.setText("(" + xTouch.toInt() + ", " + yTouch.toInt() + ")")
             }
             else {
                 bitmapCoords.setText("Off")
@@ -492,37 +519,33 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
             when (event.getAction()) {
                 MotionEvent.ACTION_DOWN -> {
                     println("ACTION_DOWN")
-                    if (inRegion(touchPoint, leftCoords))
-                        selectedForce = 0  // left foot force
-                    else if (inRegion(touchPoint, rightCoords))
-                        selectedForce = 1  // right foot force
+                    if (inBitmap(touchPoint)) {
+                        if (inRegion(touchPoint, leftCoords))
+                            selectedForce = 0  // left foot force
+                        else if (inRegion(touchPoint, rightCoords))
+                            selectedForce = 1  // right foot force
+
+                    }
                 }
                 MotionEvent.ACTION_MOVE -> {
                     println("ACTION_MOVE")
-                    if (inBitmap(touchPoint))
-                        println("in bitmap")
 
-                    if (selectedForce != -1) {  // don't do anything if no force selected
-                        configureDrawing(selectedForce, touchPoint)
-                        v.invalidate()
-
-                        if (inBitmap(touchPoint)) {
-                            configureDrawing(selectedForce, touchPoint)
+                        if (selectedForce != -1) {  // don't do anything if no force selected
+                            if (inBitmap(touchPoint)) {
+                                configureDrawing(selectedForce, touchPoint)
+                                v.invalidate()
+                            } else { // act as if action_up happened
+                                if (selectedForce == 0) {
+                                    swingLeftXY[0] = xTouch.toInt()
+                                    swingLeftXY[1] = yTouch.toInt()
+                                } else if (selectedForce == 1) {
+                                    swingRightXY[0] = xTouch.toInt()
+                                    swingRightXY[1] = yTouch.toInt()
+                                }
+                                selectedForce = -1
+                            }
                             v.invalidate()
                         }
-                        else { // act as if action_up happened
-                            if (selectedForce == 0) {
-                                swingLeftXY[0] = xTouch.toInt()
-                                swingLeftXY[1] = yTouch.toInt()
-                            }
-                            else if (selectedForce == 1) {
-                                swingRightXY[0] = xTouch.toInt()
-                                swingRightXY[1] = yTouch.toInt()
-                            }
-                            selectedForce = -1
-                            v.invalidate()
-                        }
-                    }
                 }
                 MotionEvent.ACTION_UP -> {
                     println("ACTION_UP")
