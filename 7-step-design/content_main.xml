@@ -10,13 +10,7 @@
     android:background="#000000">
 
     <!-- Video player -->
-    <ImageView
-        android:id="@+id/imView1"
-        android:layout_width="fill_parent"
-        android:layout_height="fill_parent"
-        android:layout_gravity="center"
-        android:elevation="0dp"
-        tools:targetApi="lollipop" />
+
 
     <TextView
         android:id="@+id/leftTitle"
@@ -74,15 +68,63 @@
         android:inputType="number"
         android:layout_marginTop="6dp" />
 
-
-    <ImageView
-        android:id="@+id/imageView2"
+    <android.support.constraint.ConstraintLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        app:srcCompat="@android:color/transparent"
-        android:elevation="2dp"
-        tools:targetApi="lollipop"
-        android:contentDescription="Arrows" />
+        android:layout_height="match_parent">
+
+        <view
+            android:id="@+id/arrowCanvas"
+            class="golf.golf_app_2.MainActivity$arrowCanvas"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:layout_marginBottom="8dp"
+            app:layout_constraintBottom_toBottomOf="@+id/imView1"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="@+id/imView1"
+            app:layout_constraintVertical_bias="0.308"
+            app:srcCompat="@android:color/transparent" />
+
+        <ImageView
+            android:id="@+id/imView1"
+            android:layout_width="fill_parent"
+            android:layout_height="fill_parent"
+            android:layout_gravity="center"
+            android:elevation="0dp"
+            tools:targetApi="lollipop" />
+
+
+
+
+
+
+
+
+    </android.support.constraint.ConstraintLayout>
+
+    <TextView
+        android:id="@+id/textView2"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="80dp"
+        android:text="Bitmap Coords: "
+        android:textColor="#ff0000"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <TextView
+        android:id="@+id/bitmapCoords"
+        android:textColor="#ff0000"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="120dp"
+        android:layout_marginTop="80dp"
+        app:layout_constraintStart_toEndOf="@+id/textView2"
+        app:layout_constraintTop_toTopOf="parent" />
+
+
 
     <Button
         android:id="@+id/changeViewButton"
@@ -118,18 +160,6 @@
         tools:targetApi="lollipop"/>
 
     <TextView
-        android:id="@+id/swingString"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_gravity="end"
-        android:textColor="#ffffff"
-        android:layout_marginTop="60dp"
-        android:layout_marginEnd="8dp"
-        android:layout_marginStart="8dp"
-        android:elevation="0dp"
-        android:text="@string/takeAway"
-        tools:targetApi="lollipop"/>
-    <TextView
         android:id="@+id/swingTitle"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -142,6 +172,17 @@
         android:text="@string/swing1"
         tools:targetApi="lollipop"/>
 
+    <TextView
+        android:id="@+id/swingString"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="end"
+        android:textColor="#ffffff"
+        android:layout_marginTop="60dp"
+        android:layout_marginEnd="8dp"
+        android:layout_marginStart="8dp"
+        android:elevation="0dp"
+        android:text="@string/takeAway"
+        tools:targetApi="lollipop"/>
+
 </FrameLayout>
-
-

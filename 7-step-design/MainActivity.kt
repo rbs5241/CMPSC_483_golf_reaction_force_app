@@ -1,20 +1,30 @@
 package golf.golf_app_2
 
-import android.graphics.Bitmap
-import android.graphics.Canvas
-import android.graphics.Color.BLUE
-import android.graphics.Color.RED
-import android.graphics.Paint
+import android.content.ClipData
 import android.os.Bundle
 import android.support.design.widget.NavigationView
 import android.support.v4.view.GravityCompat
+import android.support.v4.view.MotionEventCompat
 import android.support.v7.app.ActionBarDrawerToggle
 import android.support.v7.app.AppCompatActivity
-import android.view.Menu
-import android.view.MenuItem
+import android.view.*
+import android.view.MotionEvent.INVALID_POINTER_ID
 import android.widget.*
 import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.android.synthetic.main.app_bar_main.*
+import android.R.id.toggle
+import android.annotation.TargetApi
+import android.content.Context
+import android.content.res.Resources
+import android.graphics.*
+import android.graphics.Color.*
+import android.util.AttributeSet
+import android.util.DisplayMetrics
+import android.util.Log
+import android.widget.ToggleButton
+import golf.golf_app_2.R.id.drawer_layout
+import kotlinx.android.synthetic.main.activity_main.*
+import kotlinx.android.synthetic.main.content_main.*
 
 
 class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelectedListener {
@@ -34,6 +44,26 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
     private var isSw4Top = false
     private var isSw5Top = false
     private var isSw6Top = false
+
+    // get dimensions of bitmap
+    private val bitmapWidth = minOf(Resources.getSystem().getDisplayMetrics().heightPixels, Resources.getSystem().getDisplayMetrics().widthPixels)
+
+    // keep track of endpoints of left and right force arrows
+    lateinit var swingLeftXY:IntArray
+    lateinit var swingRightXY:IntArray
+
+    // keep track of position of arrowCanvas
+    var bitmapX = -1
+    var bitmapY = -1
+
+    // set to 0 until focus has been changed
+    var focusChanged = 0
+
+    lateinit var mCanvas:arrowCanvas
+
+    // used to keep track of drag and drop operations
+    // 0: left, 1: right, -1: no force
+    private var selectedForce:Int = -1
 
 
     //SWING 1 ******************************
@@ -77,11 +107,27 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
     private val swingTitles = arrayOf (R.string.swing1, R.string.swing2, R.string.swing3, R.string.swing4,
             R.string.swing5, R.string.swing6)
 
+    private val sw1FrontBaseX = arrayOf(400,600,500)
+    private val sw1FrontBaseY = arrayOf(1050,1050,1050)
+
+
+    private val sw1FrontLeftX = arrayOf(403.60938,460.3741527,459.9356082,483.1427973,495.9087236,401.3407655,453.60938)
+    private val sw1FrontLeftY = arrayOf(666.9884973,545.2661964,554.4063773,624.4238282,585.4331555,813.6020873,895.0579073)
+
+    private val sw1FrontRightX = arrayOf(489.69558,556.30849,578.3204082,618.2107318,510.5346818,433.3239745,529.1250055)
+    private val sw1FrontRightY = arrayOf(663.9133245,772.0259927,821.6139773,823.7485436,245.0886118,178.4925982,560.5403555)
+
+    private val sw1FrontResX = arrayOf(418.30496,516.6826427,538.2560164,601.3535291,506.4434055,334.66474,482.7343855)
+    private val sw1FrontResY = arrayOf(230.9018218,217.2921891,276.0203545,348.1723718,-269.4782327,-107.9053145,355.5982627)
+
+
+
     private val sw6LeftX = arrayOf(280.205616, 262.431496,217.527115,247.680046,228.995918,245.533455,291.902302)
     private val sw6LeftY = arrayOf(135.052826, 141.040527, 192.400925, 273.311798,228.903,56.069366,78.753601)
     private val sw6RightX = arrayOf(240.765366,240.730515,235.659164,234.3778,233.759819,230.079994,229.079224)
     private val sw6RightY = arrayOf(130.360718,121.531616,84.934265,91.81366,96.833923,114.87207,113.382813)
 
+    @TargetApi(18)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
@@ -94,13 +140,29 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
 
         nav_view.setNavigationItemSelectedListener(this)
 
-        //configureVideoView(R.raw.swing1, R.string.front) //RS - Configuring the video playback of animation
-        //configureSeekBar()   //RS - Configuring the seek bar, see method for Listener
-        configureDrawing()
+        mCanvas = findViewById<View>(R.id.arrowCanvas) as arrowCanvas
+        mCanvas.setOnTouchListener(ChoiceTouchListener())
+
+        // initialize endpoints to initial values for frame one of swing 6
+        swingLeftXY = intArrayOf(sw6LeftX[0].toInt(), sw6LeftY[0].toInt())
+        swingRightXY = intArrayOf(sw6RightX[0].toInt(), sw6RightY[0].toInt())
+
+        configureStaticDrawing(sw1FrontBaseX[0],sw1FrontBaseY[0],sw1FrontBaseX[1],sw1FrontBaseY[1],sw1FrontBaseX[2],sw1FrontBaseY[2])
         configureImageView(R.raw.sw1_front_1) //initialize to sw1 front
         setNextAndPrevButtons(0)
     }
+
+    override fun onWindowFocusChanged(hasFocus:Boolean) {
+        val location = IntArray(2)
+        mCanvas.getLocationOnScreen(location)
+        bitmapX = location[0]
+        bitmapY = location[1]
+        println("after focused, x: " + bitmapX)
+        println("after focused, y: " + bitmapY)
+        focusChanged = 1
+    }
     override fun onBackPressed() {                           //When back is pressed close the drawer
+
         if (drawer_layout.isDrawerOpen(GravityCompat.START)){ //If layout drawer is open close it
             drawer_layout.closeDrawer(GravityCompat.START)
         } else {
@@ -122,10 +184,6 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         }
     }
 
-    /* configureSeekBar (RS) - PROBLEM - VIDEO ENCODEC NOT SUPPORTING ACCURATE SCRUBBINB
-     * Sets the property isLooping to true for videoView1
-     * button1 - toggle play and pause
-     */
     private fun configureImageView(image : Int){
         val imageView1 = findViewById<ImageView>(R.id.imView1)
         val swingString = findViewById<TextView>(R.id.swingString)
@@ -133,10 +191,6 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         swingString.setText(swingStrings[frame])
     }
 
-    /* configureDrawing (RS) -
-     *
-     *
-     */
     private fun setNextAndPrevButtons(count:Int){
         frame = count
         val forwardButton = findViewById<Button>(R.id.forward) as Button
@@ -146,8 +200,11 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         forwardButton.setText(R.string.next)
         forwardButton.setOnClickListener({
             if (frame == 6){ frame = 0 } else { frame += 1 }
-            configureDrawing()
-            if (isSw1Front){configureImageView(sw1Front[frame])}
+
+            if (isSw1Front){
+                configureImageView(sw1Front[frame])
+                configureStaticDrawing(sw1FrontBaseX[0],sw1FrontBaseY[0],sw1FrontBaseX[1],sw1FrontBaseY[1],sw1FrontBaseX[2],sw1FrontBaseY[2])
+            }
             if (isSw2Front){configureImageView(sw2Front[frame])}
             if (isSw3Front){configureImageView(sw3Front[frame])}
             if (isSw4Front){configureImageView(sw4Front[frame])}
@@ -161,8 +218,11 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         backwardButton.setText(R.string.previous)
         backwardButton.setOnClickListener({
             if (frame == 0){ frame = 6 } else { frame -= 1 }
-            configureDrawing()
-            if (isSw1Front){configureImageView(sw1Front[frame])}
+
+            if (isSw1Front){
+                configureImageView(sw1Front[frame])
+                configureStaticDrawing(sw1FrontBaseX[0],sw1FrontBaseY[0],sw1FrontBaseX[1],sw1FrontBaseY[1],sw1FrontBaseX[2],sw1FrontBaseY[2])
+            }
             if (isSw2Front){configureImageView(sw2Front[frame])}
             if (isSw3Front){configureImageView(sw3Front[frame])}
             if (isSw4Front){configureImageView(sw4Front[frame])}
@@ -232,42 +292,329 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
             }
         })
     }
-    private fun configureDrawing(){
 
+    private fun configureDrawing(selectedForce: Int, touchPoint:Coordinates,LeftBaseX:Int, LeftBaseY:Int, RightBaseX:Int, RightBaseY:Int, ResBaseX:Int, ResBaseY:Int,
+                                 LeftEndX:Int, LeftEndY:Int, RightEndX:Int, RightEndY:Int, ResEndX:Int, ResEndY:Int){
 
-        val mImageView = findViewById<ImageView>(R.id.imageView2) as ImageView
-        val bitmap = Bitmap.createBitmap(
-                500,
-                500,
-                Bitmap.Config.ARGB_8888
-        )
-        val canvas = Canvas(bitmap)
+        val canvas:Canvas = mCanvas.getMyCanvas()
+        canvas.drawColor(0, PorterDuff.Mode.CLEAR)
+
+        val imageView1 = findViewById<ImageView>(R.id.imView1)
+        imageView1.bringToFront()
+        val paint = Paint()
+        paint.style = Paint.Style.STROKE
+        paint.strokeWidth = 8.toFloat()
+        paint.isAntiAlias = true
+
+        // left arrow being dragged
+        if (selectedForce == 0) {
+            println("left arrow should be moving in configureDrawing")
+            paint.color = RED
+            val leftX = touchPoint.getCood_X()
+            val leftY = touchPoint.getCood_Y()
+            println("left X in config: " + leftX)
+            println("left Y in config: " + leftY)
+            canvas.drawLine(
+                    RightBaseX.toFloat(),  //start X
+                    RightBaseY.toFloat(),  //start Y
+                    leftX.toFloat(), //stop  X
+                    leftY.toFloat(), //stop  Y
+                    paint
+            )
+            paint.style = Paint.Style.FILL
+            canvas.drawCircle(leftX.toFloat(), leftY.toFloat(), (15).toFloat(), paint)
+            // now still have to repaint old blue and yellow arrows
+            paint.color = BLUE
+            canvas.drawLine(
+                    LeftBaseX.toFloat(), //start x
+                    LeftBaseY.toFloat(), //start y
+                    swingRightXY[0].toFloat(), //stop x
+                    swingRightXY[1].toFloat(), //stop y
+                    paint
+            )
+            paint.style = Paint.Style.FILL
+            canvas.drawCircle(swingRightXY[0].toFloat(), swingRightXY[1].toFloat(), (15).toFloat(), paint)
+
+            paint.color = YELLOW
+
+            canvas.drawLine(
+                    ResBaseX.toFloat(), //start x
+                    ResBaseY.toFloat(), //start y
+                    sw6RightX[frame].toFloat(), //stop x
+                    sw6RightY[frame].toFloat(), //stop y
+                    paint
+            )
+        }
+        else {
+            println("right arrow moving in configureDrawing")
+            paint.color = BLUE
+            val rightEndpoints = getRightEndpoints()
+            val rightX = touchPoint.getCood_X()
+            val rightY = touchPoint.getCood_Y()
+            canvas.drawLine(
+                    LeftBaseX.toFloat(), //start x
+                    LeftBaseY.toFloat(), //start y
+                    rightX.toFloat(), //stop x
+                    rightY.toFloat(), //stop y
+                    paint
+            )
+            paint.style = Paint.Style.FILL
+            canvas.drawCircle(rightX.toFloat(), rightY.toFloat(), (15).toFloat(), paint)
+            // now still have to repaint old red and yellow arrows
+            paint.color = RED
+            canvas.drawLine(
+                    RightBaseX.toFloat(),  //start X
+                    RightBaseY.toFloat(),  //start Y
+                    swingLeftXY[0].toFloat(), //stop  X
+                    swingLeftXY[1].toFloat(), //stop  Y
+                    paint
+            )
+            paint.style = Paint.Style.FILL
+            canvas.drawCircle(swingLeftXY[0].toFloat(), swingLeftXY[1].toFloat(), (15).toFloat(), paint)
+
+            paint.color = YELLOW
+
+            canvas.drawLine(
+                    ResBaseX.toFloat(), //start x
+                    ResBaseY.toFloat(), //start y
+                    sw6RightX[frame].toFloat(), //stop x
+                    sw6RightY[frame].toFloat(), //stop y
+                    paint
+            )
+        }
+        mCanvas.bringToFront()
+    }
+
+    private fun configureStaticDrawing(LeftBaseX:Int, LeftBaseY:Int, RightBaseX:Int, RightBaseY:Int, ResBaseX:Int, ResBaseY:Int){
+
+        // bounds not yet accurate
+        if (focusChanged == 0) {
+            // should allow enough time
+            Thread.sleep(1_000)
+            focusChanged = 1
+        }
+
+        val canvas:Canvas = mCanvas.getMyCanvas()
+        val bounds = canvas.clipBounds
+        print(bounds)
+        println(" bounds to the left")
+        print(canvas)
+        println("canvas to the left")
+        canvas.drawColor(0, PorterDuff.Mode.CLEAR)
+        //canvas.drawColor(Color.GREEN)
         val paint = Paint()
         paint.color = RED
         paint.style = Paint.Style.STROKE
         paint.strokeWidth = 8.toFloat()
         paint.isAntiAlias = true
-
+        paint.style = Paint.Style.FILL
         canvas.drawLine(
-                280.toFloat(),  //start X
-                430.toFloat(),  //start Y
-                sw6LeftX[frame].toFloat(), //stop  X
-                sw6LeftY[frame].toFloat(), //stop  Y
+                RightBaseX.toFloat(),  //start X
+                RightBaseY.toFloat(),  //start Y
+                sw1FrontRightX[frame].toFloat(), //stop  X
+                sw1FrontRightY[frame].toFloat(), //stop  Y
                 paint
         )
+
+        // set position of endpoints
+        swingLeftXY[0] = sw6LeftX[frame].toInt()
+        swingLeftXY[1] = sw6LeftY[frame].toInt()
+
+        // draw bounding circle
+        canvas.drawCircle(sw6LeftX[frame].toFloat(), sw6LeftY[frame].toFloat(), (15).toFloat(), paint)
+
         paint.color = BLUE
 
         canvas.drawLine(
-                180.toFloat(), //start x
-                430.toFloat(), //start y
-                sw6RightX[frame].toFloat(), //stop x
-                sw6RightY[frame].toFloat(), //stop y
+                LeftBaseX.toFloat(), //start x
+                LeftBaseY.toFloat(), //start y
+                sw1FrontLeftX[frame].toFloat(), //stop x
+                sw1FrontLeftY[frame].toFloat(), //stop y
                 paint
         )
-        mImageView.setImageBitmap(bitmap)
-        mImageView.bringToFront()
+        canvas.drawCircle(sw6RightX[frame].toFloat(), sw6RightY[frame].toFloat(), (15).toFloat(), paint)
 
+        paint.color = YELLOW
+
+        canvas.drawLine(
+                ResBaseX.toFloat(), //start x
+                ResBaseY.toFloat(), //start y
+                sw1FrontResX[frame].toFloat(), //stop x
+                sw1FrontResY[frame].toFloat(), //stop y
+                paint
+        )
+
+
+        swingRightXY[0] = sw6RightX[frame].toInt()
+        swingRightXY[1] = sw6RightY[frame].toInt()
+        //mImageView.setImageBitmap(bitmap)
+        //mImageView.bringToFront()
+        mCanvas.setImageBitmap(mCanvas.getMyBitMap())
+        mCanvas.bringToFront()
     }
+
+    // Used for drawing arrows
+    class arrowCanvas(c: Context, attrs: AttributeSet):ImageView(c, attrs) {
+
+        // get screen size
+        val mHeight = Resources.getSystem().getDisplayMetrics().heightPixels
+        val mWidth = Resources.getSystem().getDisplayMetrics().widthPixels
+
+
+        val bitmap = Bitmap.createBitmap( // set to 1000 until it fails
+                1000,//minOf(mWidth, mHeight),
+                1000,//minOf(mWidth, mHeight),
+                Bitmap.Config.ARGB_8888
+        )
+        val canvas:Canvas
+
+        internal var context:Context
+        init {
+            context = c
+            canvas = Canvas(bitmap)
+        }
+        fun getMyBitMap():Bitmap{
+            return this.bitmap
+        }
+        fun getMyCanvas():Canvas{
+            return this.canvas
+        }
+    }
+
+    // Used to keep pairs of coordinates
+    class Coordinates {
+        var cood_x: Int = 0;
+        var cood_y: Int = 0;
+        constructor(cood_X:Int, cood_Y:Int) {
+            this.cood_x = cood_X
+            this.cood_y = cood_Y
+        }
+        constructor() {}
+        fun getCood_X():Int {
+            return this.cood_x
+        }
+        fun getCood_Y():Int {
+            return this.cood_y
+        }
+    }
+
+    private fun getLeftEndpoints():Coordinates {
+        return Coordinates(swingLeftXY[0], swingLeftXY[1])
+    }
+
+    private fun getRightEndpoints():Coordinates {
+        return Coordinates(swingRightXY[0], swingRightXY[1])
+    }
+
+    // Couldn't use the built in function for some reason
+    fun myAbsVal(val1:Int, val2:Int):Int{
+        var value:Int = val1 - val2
+        if (value < 0)
+            value = value + (-(value * 2))
+        return value
+    }
+
+    // Used to check if touch point is on end of force arrow
+    @TargetApi(16)
+    fun inRegion(touch:Coordinates, endpoint:Coordinates):Boolean {
+        println("bitmapX: " + bitmapX)
+        println("bitmapY: " + bitmapY)
+        println("inRegion called")
+        println("touch x: " + touch.getCood_X())
+        println("endpoint x: " + endpoint.getCood_X())
+        println("touch y: " + touch.getCood_Y())
+        println("endpoint y: " + endpoint.getCood_Y())
+
+        // if the touch point is within so many pixels, return true
+        if ((myAbsVal(endpoint.getCood_X(), touch.getCood_X()) < 50) && (myAbsVal(endpoint.getCood_Y(), touch.getCood_Y()) < 50))
+            return true
+        return false
+    }
+
+    fun inBitmap(touch:Coordinates):Boolean {
+        val x = touch.getCood_X()
+        val y = touch.getCood_Y()
+        println("touch inbitmap: (" + x + ", " + y)
+        println("bitmapX: " + bitmapX)
+        println("bitmapY: " + bitmapY)
+
+        if ((x < 5) || (x > (bitmapWidth - 5)))
+            return false
+        else if ((y < 5) || (y > (bitmapWidth - 5)))
+            return false
+        else return true
+    }
+
+    private inner class ChoiceTouchListener : View.OnTouchListener {
+        override fun onTouch(v: View, event: MotionEvent): Boolean {
+            println("x and y to start: " + event.getX() + "    " + event.getY())
+            val xTouch = event.getX()
+            val yTouch = event.getY()
+            val touchPoint = Coordinates(xTouch.toInt(), yTouch.toInt())
+            val leftCoords:Coordinates = getLeftEndpoints()
+            val rightCoords:Coordinates = getRightEndpoints()
+
+            if (inBitmap(touchPoint)) {
+                bitmapCoords.setText("(" + xTouch.toInt() + ", " + yTouch.toInt() + ")")
+            }
+            else {
+                bitmapCoords.setText("Off")
+            }
+            when (event.getAction()) {
+                MotionEvent.ACTION_DOWN -> {
+                    println("ACTION_DOWN")
+                    if (inBitmap(touchPoint)) {
+                        if (inRegion(touchPoint, leftCoords))
+                            selectedForce = 0  // left foot force
+                        else if (inRegion(touchPoint, rightCoords))
+                            selectedForce = 1  // right foot force
+
+                    }
+                }
+                MotionEvent.ACTION_MOVE -> {
+                    println("ACTION_MOVE")
+
+                    if (selectedForce != -1) {  // don't do anything if no force selected
+                        if (inBitmap(touchPoint)) {
+                            configureDrawing(selectedForce, touchPoint,sw1FrontBaseX[0],sw1FrontBaseY[0],
+                                    sw1FrontBaseX[1],sw1FrontBaseY[1],sw1FrontBaseX[2],sw1FrontBaseY[2],
+                                    0,0,0,0,0,0) //************************************************************************LINES ARE DRAWN ON TOUCH
+                            v.invalidate()
+                        } else { // act as if action_up happened
+                            if (selectedForce == 0) {
+                                swingLeftXY[0] = xTouch.toInt()
+                                swingLeftXY[1] = yTouch.toInt()
+                            } else if (selectedForce == 1) {
+                                swingRightXY[0] = xTouch.toInt()
+                                swingRightXY[1] = yTouch.toInt()
+                            }
+                            selectedForce = -1
+                        }
+                        v.invalidate()
+                    }
+                }
+                MotionEvent.ACTION_UP -> {
+                    println("ACTION_UP")
+
+                    // update location of endpoints for correct force
+                    if (selectedForce == 0) {
+                        swingLeftXY[0] = xTouch.toInt()
+                        swingLeftXY[1] = yTouch.toInt()
+                    }
+                    else if (selectedForce == 1) {
+                        swingRightXY[0] = xTouch.toInt()
+                        swingRightXY[1] = yTouch.toInt()
+                    }
+
+                    //reset selected force to -1 (no force selected)
+                    selectedForce = -1
+                    v.invalidate()
+                }
+            }
+            return true
+        }
+    }
+
     override fun onNavigationItemSelected(item: MenuItem): Boolean {
         // Handle navigation view item clicks here.
         val swingTitle = findViewById<TextView>(R.id.swingTitle)
