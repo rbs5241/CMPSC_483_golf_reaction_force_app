@@ -99,16 +99,111 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
             R.string.swing5, R.string.swing6)
 
     private val sw1FrontBaseX = arrayOf(350,550,450)
-    private val sw1FrontBaseY = arrayOf(1000,1000,1000)
+    private val sw1FrontBaseY = 1000
+    private val sw1TopBaseX = arrayOf(450,600,525)
+    private val sw1TopBaseY = 650
 
-    private val sw1FrontLeftX = arrayOf(403.60938,460.3741527,459.9356082,483.1427973,495.9087236,401.3407655,453.60938)
-    private val sw1FrontLeftY = arrayOf(666.9884973,545.2661964,554.4063773,624.4238282,585.4331555,813.6020873,895.0579073)
+    private val sw2FrontBaseX = arrayOf(360,550,455)
+    private val sw2FrontBaseY = 1000
+    private val sw2TopBaseX = arrayOf(450,600,525)
+    private val sw2TopBaseY = 650
 
-    private val sw1FrontRightX = arrayOf(489.69558,556.30849,578.3204082,618.2107318,510.5346818,433.3239745,529.1250055)
-    private val sw1FrontRightY = arrayOf(663.9133245,772.0259927,821.6139773,823.7485436,245.0886118,178.4925982,560.5403555)
+    private val sw3FrontBaseX = arrayOf(330,500,415)
+    private val sw3FrontBaseY = 950
+    private val sw3TopBaseX = arrayOf(420,580,500)
+    private val sw3TopBaseY = 600
 
-    private val sw1FrontResX = arrayOf(418.30496,516.6826427,538.2560164,601.3535291,506.4434055,334.66474,482.7343855)
-    private val sw1FrontResY = arrayOf(230.9018218,217.2921891,276.0203545,348.1723718,-269.4782327,-107.9053145,355.5982627)
+    private val sw4FrontBaseX = arrayOf(400,600,500)
+    private val sw4FrontBaseY = 1000
+    private val sw4TopBaseX = arrayOf(400,600,500)
+    private val sw4TopBaseY = 650
+
+    /*private val sw5FrontBaseX = arrayOf()
+    private val sw5FrontBaseY =
+            private val sw5TopBaseX = arrayOf()
+    private val sw5TopBaseY =*/
+
+    private val sw6FrontBaseX = arrayOf(370,570,470)
+    private val sw6FrontBaseY = 1000
+    private val sw6TopBaseX = arrayOf(400,600,500)
+    private val sw6TopBaseY = 600
+
+
+    private val sw1FrontLeftX = arrayOf(404,460,460,483,496,401,454)
+    private val sw1FrontLeftY = arrayOf(667,545,554,624,585,814,895)
+
+    private val sw1FrontRightX = arrayOf(490,556,578,618,511,433,529)
+    private val sw1FrontRightY = arrayOf(664,772,822,824,245,178,561)
+
+    private val sw1FrontResX = arrayOf(418,517,538,601,506,335,483)
+    private val sw1FrontResY = arrayOf(231,217,276,348,-269,-108,356)
+
+    private val sw1TopLeftX = arrayOf(504,660,510,533,546,451,417)
+    private val sw1TopLeftY = arrayOf(640,633,650,688,776,718,684)
+
+    private val sw1TopRightX = arrayOf(540,354,578,618,511,433,529)
+    private val sw1TopRightY = arrayOf(654,663,653,638,409,595,704)
+
+
+    private val sw2FrontLeftX = arrayOf(488,490,499,513,417,428,480)
+    private val sw2FrontLeftY = arrayOf(451,364,269,242,583,417,159)
+
+    private val sw2FrontRightX = arrayOf(414,410,437,446,322,429,514)
+    private val sw2FrontRightY = arrayOf(479,547,664,682,225,326,609)
+
+    private val sw2FrontResX = arrayOf(447,445,481,504,284,402,538)
+    private val sw2FrontResY = arrayOf(130,111,134,124,8,-57,-32)
+
+    private val sw2TopRightX = arrayOf(573,575,584,597,505,516,565)
+    private val sw2TopRightY = arrayOf(658,638,662,693,836,742,678)
+
+    private val sw2TopLeftX = arrayOf(469,466,491,500,381,483,565)
+    private val sw2TopLeftY = arrayOf(625,661,629,626,342,596,728)
+
+    private val sw3FrontLeftX = arrayOf(334,390,366,442,409,337,273)
+    private val sw3FrontLeftY = arrayOf(676,286,424,466,570,612,677)
+
+    private val sw3FrontRightX = arrayOf(429,492,523,542,444,398,460)
+    private val sw3FrontRightY = arrayOf(467,795,807,815,144,349,720)
+
+    private val sw3FrontResX = arrayOf(348,467,473,569,438,321,318)
+    private val sw3FrontResY = arrayOf(193,131,281,331,-236,11,447)
+
+    private val sw3TopLeftX = arrayOf(424,480,456,532,499,427,363)
+    private val sw3TopLeftY = arrayOf(963,903,949,1009,1108,969,972)
+
+    private val sw3TopRightX = arrayOf(509,572,603,622,524,478,540)
+    private val sw3TopRightY = arrayOf(937,1001,944,897,831,884,941)
+
+    private val sw4FrontLeftX = arrayOf(460,466,491,531,498,362,357)
+    private val sw4FrontLeftY = arrayOf(626,461,529,520,729,902,897)
+
+    private val sw4FrontRightX = arrayOf(530,559,553,578,527,473,548)
+    private val sw4FrontRightY = arrayOf(686,818,823,823,430,73,450)
+
+    private val sw4FrontResX = arrayOf(490,525,543,609,525,335,406)
+    private val sw4FrontResY = arrayOf(312,279,353,342,159,-25,348)
+
+    private val sw4TopLeftX = arrayOf(460,466,491,531,498,362,357)
+    private val sw4TopLeftY = arrayOf(625,591,606,647,729,690,663)
+
+    private val sw4TopRightX = arrayOf(460,466,491,531,498,362,357)
+    private val sw4TopRightY = arrayOf(663,714,687,648,464,624,664)
+
+    private val sw6FrontLeftX = arrayOf(417,434,477,448,466,450,406)
+    private val sw6FrontLeftY = arrayOf(719,551,774,851,808,644,665)
+
+    private val sw6FrontRightX = arrayOf(504,541,591,464,377,376,549)
+    private val sw6FrontRightY = arrayOf(679,827,924,486,184,221,940)
+
+    private val sw6FrontResX = arrayOf(391,446,538,382,313,297,425)
+    private val sw6FrontResY = arrayOf(398,379,698,336,-8,-135,605)
+
+    private val sw6TopLeftX = arrayOf(447,464,507,478,496,480,436)
+    private val sw6TopLeftY = arrayOf(594,605,685,718,765,657,663)
+
+    private val sw6TopRightX = arrayOf(534,571,621,494,407,406,579)
+    private val sw6TopRightY = arrayOf(589,631,532,356,311,485,623)
 
 
     private val sw6LeftX = arrayOf(280.205616, 262.431496,217.527115,247.680046,228.995918,245.533455,291.902302)
@@ -116,11 +211,6 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
     private val sw6RightX = arrayOf(240.765366,240.730515,235.659164,234.3778,233.759819,230.079994,229.079224)
     private val sw6RightY = arrayOf(130.360718,121.531616,84.934265,91.81366,96.833923,114.87207,113.382813)
 
-
-    //private val newLeftX = 0
-    //private val newLeftY = 0
-    //private val newRightX = 0
-    //private val newRightY = 0
 
 
     @TargetApi(18)
@@ -144,8 +234,8 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         swingRightXY = intArrayOf(sw6RightX[0].toInt(), sw6RightY[0].toInt())
 
         //Draws the initial arrows for swing 1 front Take Away frame
-        configureStaticDrawing(sw1FrontBaseX[0],sw1FrontBaseY[0],sw1FrontBaseX[1],sw1FrontBaseY[1],sw1FrontBaseX[2],sw1FrontBaseY[2],
-                sw1FrontLeftX[0].toInt(),sw1FrontLeftY[0].toInt(),sw1FrontRightX[0].toInt(),sw1FrontRightY[0].toInt(),sw1FrontResX[0].toInt(),sw1FrontResY[0].toInt())
+        configureStaticDrawing(sw1FrontBaseX[0],sw1FrontBaseY,sw1FrontBaseX[1],sw1FrontBaseY,sw1FrontBaseX[2],sw1FrontBaseY,
+                sw1FrontLeftX[0],sw1FrontLeftY[0],sw1FrontRightX[0],sw1FrontRightY[0],sw1FrontResX[0],sw1FrontResY[0])
 
         //Sets the initial image view in center to swing 1 front Take Away frame
         configureImageView(R.raw.sw1_front_1) //initialize to sw1 front
@@ -211,6 +301,69 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         swingString.setText(swingStrings[frame])
     }
 
+    /* updateImageAndArrows (RS) -
+     * called from next and previous button listener so we don't
+     * have to have the same exact code in here twice
+     */
+    private fun updateImageAndArrows(){
+        if (isSw1Front){
+            configureImageView(sw1Front[frame])
+            configureStaticDrawing(sw1FrontBaseX[0],sw1FrontBaseY,sw1FrontBaseX[1],sw1FrontBaseY,sw1FrontBaseX[2],sw1FrontBaseY,
+                    sw1FrontLeftX[frame],sw1FrontLeftY[frame],sw1FrontRightX[frame],sw1FrontRightY[frame],sw1FrontResX[frame],sw1FrontResY[frame])
+        }
+        if (isSw2Front){
+            configureImageView(sw2Front[frame])
+            configureStaticDrawing(sw2FrontBaseX[0],sw2FrontBaseY,sw2FrontBaseX[1],sw2FrontBaseY,sw2FrontBaseX[2],sw2FrontBaseY,
+                    sw2FrontLeftX[frame],sw2FrontLeftY[frame],sw2FrontRightX[frame],sw2FrontRightY[frame],sw2FrontResX[frame],sw2FrontResY[frame])
+        }
+        if (isSw3Front){
+            configureImageView(sw3Front[frame])
+            configureStaticDrawing(sw3FrontBaseX[0],sw3FrontBaseY,sw3FrontBaseX[1],sw3FrontBaseY,sw3FrontBaseX[2],sw3FrontBaseY,
+                    sw3FrontLeftX[frame],sw3FrontLeftY[frame],sw3FrontRightX[frame],sw3FrontRightY[frame],sw3FrontResX[frame],sw3FrontResY[frame])
+        }
+        if (isSw4Front){
+            configureImageView(sw4Front[frame])
+            configureStaticDrawing(sw4FrontBaseX[0],sw4FrontBaseY,sw4FrontBaseX[1],sw4FrontBaseY,sw4FrontBaseX[2],sw4FrontBaseY,
+                    sw4FrontLeftX[frame],sw4FrontLeftY[frame],sw4FrontRightX[frame],sw4FrontRightY[frame],sw4FrontResX[frame],sw4FrontResY[frame])
+        }
+        if (isSw5Front){
+            configureImageView(sw5Front[frame])
+        }
+        if (isSw6Front){
+            configureImageView(sw6Front[frame])
+            configureStaticDrawing(sw6FrontBaseX[0],sw6FrontBaseY,sw6FrontBaseX[1],sw6FrontBaseY,sw6FrontBaseX[2],sw6FrontBaseY,
+                    sw6FrontLeftX[frame],sw6FrontLeftY[frame],sw6FrontRightX[frame],sw6FrontRightY[frame],sw6FrontResX[frame],sw6FrontResY[frame])
+        }
+        if (isSw1Top){
+            configureImageView(sw1Top[frame])
+            configureStaticDrawing(sw1TopBaseX[0],sw1TopBaseY,sw1TopBaseX[1],sw1TopBaseY,sw1TopBaseX[2],sw1TopBaseY,
+                    sw1TopLeftX[frame],sw1TopLeftY[frame],sw1TopRightX[frame],sw1TopRightY[frame],sw1FrontResX[frame],sw1FrontResY[frame])
+        }
+        if (isSw2Top){
+            configureImageView(sw2Top[frame])
+            configureStaticDrawing(sw2TopBaseX[0],sw2TopBaseY,sw2TopBaseX[1],sw2TopBaseY,sw2TopBaseX[2],sw2TopBaseY,
+                    sw2TopLeftX[frame],sw2TopLeftY[frame],sw2TopRightX[frame],sw2TopRightY[frame],sw2FrontResX[frame],sw2FrontResY[frame])
+        }
+        if (isSw3Top){
+            configureImageView(sw3Top[frame])
+            configureStaticDrawing(sw3TopBaseX[0],sw3TopBaseY,sw3TopBaseX[1],sw3TopBaseY,sw3TopBaseX[2],sw3TopBaseY,
+                    sw3TopLeftX[frame],sw3TopLeftY[frame],sw3TopRightX[frame],sw3TopRightY[frame],sw3FrontResX[frame],sw3FrontResY[frame])
+        }
+        if (isSw4Top){
+            configureImageView(sw4Top[frame])
+            configureStaticDrawing(sw4TopBaseX[0],sw4TopBaseY,sw4TopBaseX[1],sw4TopBaseY,sw4TopBaseX[2],sw4TopBaseY,
+                    sw4TopLeftX[frame],sw4TopLeftY[frame],sw4TopRightX[frame],sw4TopRightY[frame],sw4FrontResX[frame],sw4FrontResY[frame])
+        }
+        if (isSw5Top){
+            configureImageView(sw5Top[frame])
+        }
+        if (isSw6Top){
+            configureImageView(sw6Top[frame])
+            configureStaticDrawing(sw6TopBaseX[0],sw6TopBaseY,sw6TopBaseX[1],sw6TopBaseY,sw6TopBaseX[2],sw6TopBaseY,
+                    sw6TopLeftX[frame],sw6TopLeftY[frame],sw6TopRightX[frame],sw6TopRightY[frame],sw6FrontResX[frame],sw6FrontResY[frame])
+        }
+    }
+
     /* setNextAndPrevButtons (RS) -
      * add listeners to the next, previous, and changeview buttons
      * on click either move to the next frame or previous
@@ -225,88 +378,12 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         forwardButton.setText(R.string.next)
         forwardButton.setOnClickListener({
             if (frame == 6){ frame = 0 } else { frame += 1 }
-
-            if (isSw1Front){
-                configureImageView(sw1Front[frame])
-                configureStaticDrawing(sw1FrontBaseX[0],sw1FrontBaseY[0],sw1FrontBaseX[1],sw1FrontBaseY[1],sw1FrontBaseX[2],sw1FrontBaseY[2],
-                        sw1FrontLeftX[frame].toInt(),sw1FrontLeftY[frame].toInt(),sw1FrontRightX[frame].toInt(),sw1FrontRightY[frame].toInt(),sw1FrontResX[frame].toInt(),sw1FrontResY[frame].toInt())
-            }
-            if (isSw2Front){
-                configureImageView(sw2Front[frame])
-            }
-            if (isSw3Front){
-                configureImageView(sw3Front[frame])
-            }
-            if (isSw4Front){
-                configureImageView(sw4Front[frame])
-            }
-            if (isSw5Front){
-                configureImageView(sw5Front[frame])
-            }
-            if (isSw6Front){
-                configureImageView(sw6Front[frame])
-            }
-            if (isSw1Top){
-                configureImageView(sw1Top[frame])
-            }
-            if (isSw2Top){
-                configureImageView(sw2Top[frame])
-            }
-            if (isSw3Top){
-                configureImageView(sw3Top[frame])
-            }
-            if (isSw4Top){
-                configureImageView(sw4Top[frame])
-            }
-            if (isSw5Top){
-                configureImageView(sw5Top[frame])
-            }
-            if (isSw6Top){
-                configureImageView(sw6Top[frame])
-            }
+            updateImageAndArrows()
         })
         backwardButton.setText(R.string.previous)
         backwardButton.setOnClickListener({
             if (frame == 0){ frame = 6 } else { frame -= 1 }
-
-            if (isSw1Front){
-                configureImageView(sw1Front[frame])
-                configureStaticDrawing(sw1FrontBaseX[0],sw1FrontBaseY[0],sw1FrontBaseX[1],sw1FrontBaseY[1],sw1FrontBaseX[2],sw1FrontBaseY[2],
-                        sw1FrontLeftX[frame].toInt(),sw1FrontLeftY[frame].toInt(),sw1FrontRightX[frame].toInt(),sw1FrontRightY[frame].toInt(),sw1FrontResX[frame].toInt(),sw1FrontResY[frame].toInt())
-            }
-            if (isSw2Front){
-                configureImageView(sw2Front[frame])
-            }
-            if (isSw3Front){
-                configureImageView(sw3Front[frame])
-            }
-            if (isSw4Front){
-                configureImageView(sw4Front[frame])
-            }
-            if (isSw5Front){
-                configureImageView(sw5Front[frame])
-            }
-            if (isSw6Front){
-                configureImageView(sw6Front[frame])
-            }
-            if (isSw1Top){
-                configureImageView(sw1Top[frame])
-            }
-            if (isSw2Top){
-                configureImageView(sw2Top[frame])
-            }
-            if (isSw3Top){
-                configureImageView(sw3Top[frame])
-            }
-            if (isSw4Top){
-                configureImageView(sw4Top[frame])
-            }
-            if (isSw5Top){
-                configureImageView(sw5Top[frame])
-            }
-            if (isSw6Top){
-                configureImageView(sw6Top[frame])
-            }
+            updateImageAndArrows()
         })
         changeViewButton.setText(R.string.overhead)
         changeViewButton.setOnClickListener({
@@ -315,46 +392,60 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
                 isSw1Front = false
                 isSw1Top = true
                 configureImageView(sw1Top[frame])
+                configureStaticDrawing(sw1TopBaseX[0],sw1TopBaseY,sw1TopBaseX[1],sw1TopBaseY,sw1TopBaseX[2],sw1TopBaseY,
+                        sw1TopLeftX[frame],sw1TopLeftY[frame],sw1TopRightX[frame],sw1TopRightY[frame],sw1FrontResX[frame],sw1FrontResY[frame])
             } else if (isSw1Top) {/*front*/
                 changeViewButton.setText(R.string.overhead)
                 isSw1Front = true
                 isSw1Top = false
                 configureImageView(sw1Front[frame])
-                configureStaticDrawing(sw1FrontBaseX[0],sw1FrontBaseY[0],sw1FrontBaseX[1],sw1FrontBaseY[1],sw1FrontBaseX[2],sw1FrontBaseY[2],
-                        sw1FrontLeftX[frame].toInt(),sw1FrontLeftY[frame].toInt(),sw1FrontRightX[frame].toInt(),sw1FrontRightY[frame].toInt(),sw1FrontResX[frame].toInt(),sw1FrontResY[frame].toInt())
+                configureStaticDrawing(sw1FrontBaseX[0],sw1FrontBaseY,sw1FrontBaseX[1],sw1FrontBaseY,sw1FrontBaseX[2],sw1FrontBaseY,
+                        sw1FrontLeftX[frame],sw1FrontLeftY[frame],sw1FrontRightX[frame],sw1FrontRightY[frame],sw1FrontResX[frame],sw1FrontResY[frame])
             }
             if (isSw2Front){/*top*/
                 changeViewButton.setText(R.string.front)
                 isSw2Front = false
                 isSw2Top = true
                 configureImageView(sw2Top[frame])
+                configureStaticDrawing(sw2TopBaseX[0],sw2TopBaseY,sw2TopBaseX[1],sw2TopBaseY,sw2TopBaseX[2],sw2TopBaseY,
+                        sw2TopLeftX[frame],sw2TopLeftY[frame],sw2TopRightX[frame],sw2TopRightY[frame],sw2FrontResX[frame],sw2FrontResY[frame])
             } else if (isSw2Top) {/*front*/
                 changeViewButton.setText(R.string.overhead)
                 isSw2Front = true
                 isSw2Top = false
                 configureImageView(sw2Front[frame])
+                configureStaticDrawing(sw2FrontBaseX[0],sw2FrontBaseY,sw2FrontBaseX[1],sw2FrontBaseY,sw2FrontBaseX[2],sw2FrontBaseY,
+                        sw2FrontLeftX[frame],sw2FrontLeftY[frame],sw2FrontRightX[frame],sw2FrontRightY[frame],sw2FrontResX[frame],sw2FrontResY[frame])
             }
             if (isSw3Front){/*top*/
                 changeViewButton.setText(R.string.front)
                 isSw3Front = false
                 isSw3Top = true
                 configureImageView(sw3Top[frame])
+                configureStaticDrawing(sw3TopBaseX[0],sw3TopBaseY,sw3TopBaseX[1],sw3TopBaseY,sw3TopBaseX[2],sw3TopBaseY,
+                        sw3TopLeftX[frame],sw3TopLeftY[frame],sw3TopRightX[frame],sw3TopRightY[frame],sw3FrontResX[frame],sw3FrontResY[frame])
             } else if (isSw3Top) {/*front*/
                 changeViewButton.setText(R.string.overhead)
                 isSw3Front = true
                 isSw3Top = false
                 configureImageView(sw3Front[frame])
+                configureStaticDrawing(sw3FrontBaseX[0],sw3FrontBaseY,sw3FrontBaseX[1],sw3FrontBaseY,sw3FrontBaseX[2],sw3FrontBaseY,
+                        sw3FrontLeftX[frame],sw3FrontLeftY[frame],sw3FrontRightX[frame],sw3FrontRightY[frame],sw3FrontResX[frame],sw3FrontResY[frame])
             }
             if (isSw4Front){/*top*/
                 changeViewButton.setText(R.string.front)
                 isSw4Front = false
                 isSw4Top = true
                 configureImageView(sw4Top[frame])
+                configureStaticDrawing(sw4TopBaseX[0],sw4TopBaseY,sw4TopBaseX[1],sw4TopBaseY,sw4TopBaseX[2],sw4TopBaseY,
+                        sw4TopLeftX[frame],sw4TopLeftY[frame],sw4TopRightX[frame],sw4TopRightY[frame],sw4FrontResX[frame],sw4FrontResY[frame])
             } else if (isSw4Top) {/*front*/
                 changeViewButton.setText(R.string.overhead)
                 isSw4Front = true
                 isSw4Top = false
                 configureImageView(sw4Front[frame])
+                configureStaticDrawing(sw4FrontBaseX[0],sw4FrontBaseY,sw4FrontBaseX[1],sw4FrontBaseY,sw4FrontBaseX[2],sw4FrontBaseY,
+                        sw4FrontLeftX[frame],sw4FrontLeftY[frame],sw4FrontRightX[frame],sw4FrontRightY[frame],sw4FrontResX[frame],sw4FrontResY[frame])
             }
             if (isSw5Front){/*top*/
                 changeViewButton.setText(R.string.front)
@@ -372,11 +463,15 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
                 isSw6Front = false
                 isSw6Top = true
                 configureImageView(sw6Top[frame])
+                configureStaticDrawing(sw6TopBaseX[0],sw6TopBaseY,sw6TopBaseX[1],sw6TopBaseY,sw6TopBaseX[2],sw6TopBaseY,
+                        sw6TopLeftX[frame],sw6TopLeftY[frame],sw6TopRightX[frame],sw6TopRightY[frame],sw6FrontResX[frame],sw6FrontResY[frame])
             } else if (isSw6Top){/*front*/
                 changeViewButton.setText(R.string.overhead)
                 isSw6Front = true
                 isSw6Top = false
                 configureImageView(sw6Front[frame])
+                configureStaticDrawing(sw6FrontBaseX[0],sw6FrontBaseY,sw6FrontBaseX[1],sw6FrontBaseY,sw6FrontBaseX[2],sw6FrontBaseY,
+                        sw6FrontLeftX[frame],sw6FrontLeftY[frame],sw6FrontRightX[frame],sw6FrontRightY[frame],sw6FrontResX[frame],sw6FrontResY[frame])
             }
         })
     }
@@ -709,6 +804,8 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
                 isSw4Top = false
                 isSw5Top = false
                 isSw6Top = false
+                configureStaticDrawing(sw1FrontBaseX[0],sw1FrontBaseY,sw1FrontBaseX[1],sw1FrontBaseY,sw1FrontBaseX[2],sw1FrontBaseY,
+                        sw1FrontLeftX[frame],sw1FrontLeftY[frame],sw1FrontRightX[frame],sw1FrontRightY[frame],sw1FrontResX[frame],sw1FrontResY[frame])
             }
             R.id.nav_swing_2 -> {
                 swingTitle.setText(swingTitles[1])
@@ -727,6 +824,8 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
                 isSw4Top = false
                 isSw5Top = false
                 isSw6Top = false
+                configureStaticDrawing(sw2FrontBaseX[0],sw2FrontBaseY,sw2FrontBaseX[1],sw2FrontBaseY,sw2FrontBaseX[2],sw2FrontBaseY,
+                        sw2FrontLeftX[frame],sw2FrontLeftY[frame],sw2FrontRightX[frame],sw2FrontRightY[frame],sw2FrontResX[frame],sw2FrontResY[frame])
             }
             R.id.nav_swing_3 -> {
                 // Handle swing 3 button action
@@ -746,6 +845,8 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
                 isSw4Top = false
                 isSw5Top = false
                 isSw6Top = false
+                configureStaticDrawing(sw3FrontBaseX[0],sw3FrontBaseY,sw3FrontBaseX[1],sw3FrontBaseY,sw3FrontBaseX[2],sw3FrontBaseY,
+                        sw3FrontLeftX[frame],sw3FrontLeftY[frame],sw3FrontRightX[frame],sw3FrontRightY[frame],sw3FrontResX[frame],sw3FrontResY[frame])
             }
             R.id.nav_swing_4 -> {
                 // Handle swing 4 button action
@@ -765,6 +866,8 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
                 isSw4Top = false
                 isSw5Top = false
                 isSw6Top = false
+                configureStaticDrawing(sw4FrontBaseX[0],sw4FrontBaseY,sw4FrontBaseX[1],sw4FrontBaseY,sw4FrontBaseX[2],sw4FrontBaseY,
+                        sw4FrontLeftX[frame],sw4FrontLeftY[frame],sw4FrontRightX[frame],sw4FrontRightY[frame],sw4FrontResX[frame],sw4FrontResY[frame])
             }
             R.id.nav_swing_5 -> {
                 // Handle swing 5 button action
@@ -803,6 +906,8 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
                 isSw4Top = false
                 isSw5Top = false
                 isSw6Top = false
+                configureStaticDrawing(sw6FrontBaseX[0],sw6FrontBaseY,sw6FrontBaseX[1],sw6FrontBaseY,sw6FrontBaseX[2],sw6FrontBaseY,
+                        sw6FrontLeftX[frame],sw6FrontLeftY[frame],sw6FrontRightX[frame],sw6FrontRightY[frame],sw6FrontResX[frame],sw6FrontResY[frame])
             }
             R.id.nav_settings -> {
                 // Handle settings button action
