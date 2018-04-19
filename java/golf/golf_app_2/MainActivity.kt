@@ -6,6 +6,7 @@ import android.support.design.widget.NavigationView
 import android.support.v4.view.GravityCompat
 import android.support.v7.app.ActionBarDrawerToggle
 import android.support.v7.app.AppCompatActivity
+import android.util.Log
 import android.view.Menu
 import android.view.MenuItem
 import android.view.View
@@ -19,7 +20,7 @@ import kotlinx.android.synthetic.main.app_bar_main.*
 
 class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelectedListener {
     private lateinit var imgView: ImageView
-    private lateinit var forceView:ForceView
+    private lateinit var forceView: ForceView
     private lateinit var spinnerView: ProgressBar
     private lateinit var swing: Swing
 
@@ -33,7 +34,7 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
                 this, drawer_layout, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close)
         drawer_layout.addDrawerListener(toggle)
         toggle.syncState()
-        nav_view.setNavigationItemSelectedListener(this) //Set the listener for navView
+        nav_view.setNavigationItemSelectedListener(this)
 
         forceView = findViewById<View>(R.id.arrowCanvas) as ForceView
         imgView = findViewById(R.id.imgView)
@@ -43,14 +44,6 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         setNextAndPrevButtons()
     }
 
-//    override fun onWindowFocusChanged(hasFocus:Boolean) {
-//        val location = IntArray(2)
-//        mCanvas.getLocationOnScreen(location)
-//        bitmapX = location[0]
-//        bitmapY = location[1]
-//        focusChanged = 1
-//    }
-
     override fun onBackPressed() {
         if (drawer_layout.isDrawerOpen(GravityCompat.START)){
             drawer_layout.closeDrawer(GravityCompat.START)
@@ -59,36 +52,29 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         }
     }
 
-    override fun onCreateOptionsMenu(menu: Menu): Boolean {
-        menuInflater.inflate(R.menu.main, menu)
-        return true
-    }
-
-    override fun onOptionsItemSelected(item: MenuItem): Boolean {
-        return when (item.itemId) {
-            R.id.action_settings -> true
-            else -> super.onOptionsItemSelected(item)
-        }
-    }
-
     private fun setNextAndPrevButtons(){
         val forwardButton = findViewById<Button>(R.id.forward) as Button
         val backwardButton = findViewById<Button>(R.id.backward) as Button
         val changeViewButton = findViewById<Button>(R.id.changeViewButton) as Button
 
+        val swingName = findViewById<TextView>(R.id.swingString)
+        val swingNames = arrayOf("TAKE AWAY", "EBS", "LBS", "TOP", "EDS", "LDS", "IMPACT")
+
         forwardButton.setText(R.string.next)
         forwardButton.setOnClickListener({
             swing.curFrame = (swing.curFrame + 1) % 7
             swing.switchFrame(swing.curFrame)
+            swingName.text = swingNames[swing.curFrame]
         })
         backwardButton.setText(R.string.previous)
         backwardButton.setOnClickListener({
-            swing.curFrame = (swing.curFrame - 1) % 7
+            swing.curFrame = (swing.curFrame - 1 + 7) % 7
             swing.switchFrame(swing.curFrame)
+            swingName.text = swingNames[swing.curFrame]
         })
-        changeViewButton.setText(R.string.overhead)
+
         changeViewButton.setOnClickListener({
-            if(swing.curView == "front") {
+            if (swing.curView == "front") {
                 swing.curView = "top"
             } else {
                 swing.curView = "front"
@@ -99,30 +85,30 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
 
     override fun onNavigationItemSelected(item: MenuItem): Boolean {
         val swingTitle = findViewById<TextView>(R.id.swingTitle)
-        val swingTitles = arrayOf(R.string.swing1, R.string.swing2, R.string.swing3, R.string.swing4, R.string.swing5, R.string.swing6)
+        val swingTitles = arrayOf("SWING 1", "SWING 2", "SWING 3", "SWING 4", "SWING 5", "SWING 6", "SWING 7")
         when (item.itemId) {
             R.id.nav_swing_1 -> {
-                swingTitle.setText(swingTitles[0])
+                swingTitle.text = swingTitles[0]
                 swing.switchSwing(0)
             }
             R.id.nav_swing_2 -> {
-                swingTitle.setText(swingTitles[1])
+                swingTitle.text = swingTitles[1]
                 swing.switchSwing(1)
             }
             R.id.nav_swing_3 -> {
-                swingTitle.setText(swingTitles[2])
+                swingTitle.text = swingTitles[2]
                 swing.switchSwing(2)
             }
             R.id.nav_swing_4 -> {
-                swingTitle.setText(swingTitles[3])
+                swingTitle.text = swingTitles[3]
                 swing.switchSwing(3)
             }
             R.id.nav_swing_5 -> {
-                swingTitle.setText(swingTitles[4])
+                swingTitle.text = swingTitles[4]
                 swing.switchSwing(4)
             }
             R.id.nav_swing_6 -> {
-                swingTitle.setText(swingTitles[5])
+                swingTitle.text = swingTitles[5]
                 swing.switchSwing(5)
             }
         }

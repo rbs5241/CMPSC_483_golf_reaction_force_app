@@ -13,12 +13,12 @@ class ForceLine {
         endXY = Coordinates()
     }
 
-    fun setStartXY(startX: Int, startY: Int) {
+    fun setStartXY(startX: Double, startY: Double) {
         this.startXY.cood_x = startX
         this.startXY.cood_y = startY
     }
 
-    fun setEndXY(endX: Int, endY: Int) {
+    fun setEndXY(endX: Double, endY: Double) {
         this.endXY.cood_x = endX
         this.endXY.cood_y = endY
     }
