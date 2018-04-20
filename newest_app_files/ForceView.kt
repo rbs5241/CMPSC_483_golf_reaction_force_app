@@ -19,7 +19,6 @@ import java.util.*
 
 class ForceView @TargetApi(Build.VERSION_CODES.KITKAT)
 constructor(context: Context, attrs: AttributeSet?, defStyleAttr: Int) : View(context, attrs, defStyleAttr) {
-    private var mBitmap: Bitmap? = null
     private var mCanvas: Canvas? = null
     private lateinit var spinnerAnimator: ObjectAnimator
 
@@ -40,6 +39,9 @@ constructor(context: Context, attrs: AttributeSet?, defStyleAttr: Int) : View(co
     private var rightStartX: Double = 0.0
     private var sumStartX: Double = 0.0
     private var panel: Double = 0.0
+
+    private var mBitmap: Bitmap? = null
+
 
     @JvmOverloads constructor(context: Context, attrs: AttributeSet? = null) : this(context, attrs, 0)
 
@@ -63,6 +65,7 @@ constructor(context: Context, attrs: AttributeSet?, defStyleAttr: Int) : View(co
         rightCyclePaint.color = Color.RED
     }
 
+
     override fun onSizeChanged(w: Int, h: Int, oldw: Int, oldh: Int) {
         Log.d("Size", "onSizeChanged: $w $h $oldw $oldh")
         if (w != oldw || h != oldh) {
@@ -75,7 +78,21 @@ constructor(context: Context, attrs: AttributeSet?, defStyleAttr: Int) : View(co
         configPaint()
     }
 
-    private fun initPosition(w: Int, h: Int) {
+    override fun onWindowFocusChanged(hasFocus:Boolean) {
+        // values for swing 1 frame 1
+        val leftX = convertX1(403.6)
+        val leftY = convertY(666.9)
+        val rightX = convertX2(489.69)
+        val rightY = convertY(663.9)
+        val sumX = sumStartX + (leftX - leftStartX) + (rightX - rightStartX)
+        val sumY = panel - ((panel - leftY) + (panel - rightY))
+        sumForce.setEndXY(sumX, sumY)
+        leftForce.setEndXY(leftX, leftY)
+        rightForce.setEndXY(rightX, rightY)
+        invalidate()
+    }
+
+    fun initPosition(w: Int, h: Int) {
         canvasWidth = w.toDouble()
         canvasHeight = h.toDouble()
         leftStartX = canvasWidth * 0.38
@@ -86,7 +103,6 @@ constructor(context: Context, attrs: AttributeSet?, defStyleAttr: Int) : View(co
 
     override fun onDraw(canvas: Canvas) {
         mCanvas!!.drawColor(0, PorterDuff.Mode.CLEAR)
-
         /* drawing the left force */
         mCanvas!!.drawLine(
                 (leftForce.startXY.cood_x).toFloat(),
@@ -171,7 +187,7 @@ constructor(context: Context, attrs: AttributeSet?, defStyleAttr: Int) : View(co
     }
 
     private fun inRegion(touch: Coordinates, force: Coordinates): Boolean {
-        return abs(force.cood_x - touch.cood_x) < 20 && abs(force.cood_y - touch.cood_y) < 20
+        return abs(force.cood_x - touch.cood_x) < 40 && abs(force.cood_y - touch.cood_y) < 40
     }
 
     override fun onTouchEvent(event: MotionEvent): Boolean {
@@ -200,8 +216,8 @@ constructor(context: Context, attrs: AttributeSet?, defStyleAttr: Int) : View(co
         val leftTextBox = r.findViewById<TextView>(R.id.editLeftFoot)
         val rightTextBox = r.findViewById<TextView>(R.id.editRightFoot)
         val sumTextBox = r.findViewById<TextView>(R.id.editResultant)
-        leftTextBox.text = calMag(leftForce.endXY.cood_x,leftForce.endXY.cood_y).toInt().toString()
-        rightTextBox.text = calMag(rightForce.endXY.cood_x ,rightForce.endXY.cood_y).toInt().toString()
+        leftTextBox.text = calMag(leftForce.endXY.cood_x - leftForce.startXY.cood_x,canvasHeight - leftForce.endXY.cood_y).toInt().toString()
+        rightTextBox.text = calMag(rightForce.endXY.cood_x - rightForce.startXY.cood_x ,canvasHeight - rightForce.endXY.cood_y).toInt().toString()
         sumTextBox.text = calMag(sumForce.endXY.cood_x,sumForce.endXY.cood_y).toInt().toString()
     }
 
