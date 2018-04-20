@@ -215,6 +215,8 @@ constructor(context: Context, attrs: AttributeSet?, defStyleAttr: Int) : View(co
                 if (selectedForce != null) {
                     if (inBitmap(touchPoint))
                         draw(selectedForce!!, touchPoint)
+                    else
+                        selectedForce = null
                 }
             }
             MotionEvent.ACTION_UP -> selectedForce = null
