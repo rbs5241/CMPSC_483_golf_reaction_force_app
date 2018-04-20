@@ -79,7 +79,7 @@ constructor(context: Context, attrs: AttributeSet?, defStyleAttr: Int) : View(co
     }
 
     override fun onWindowFocusChanged(hasFocus:Boolean) {
-        // values for swing 1 frame 1
+        // values for swing 1 frame 1. C
         val leftX = convertX1(403.6)
         val leftY = convertY(666.9)
         val rightX = convertX2(489.69)
@@ -190,6 +190,14 @@ constructor(context: Context, attrs: AttributeSet?, defStyleAttr: Int) : View(co
         return abs(force.cood_x - touch.cood_x) < 40 && abs(force.cood_y - touch.cood_y) < 40
     }
 
+    private fun inBitmap(touch: Coordinates): Boolean {
+        if ((touch.cood_y < 15) || (touch.cood_y > canvasHeight - 15))
+            return false
+        if ((touch.cood_x < 15) || (touch.cood_y > canvasWidth - 15))
+            return false
+        return true
+    }
+    
     override fun onTouchEvent(event: MotionEvent): Boolean {
         val touchPoint: Coordinates
         when (event.action) {
@@ -203,8 +211,11 @@ constructor(context: Context, attrs: AttributeSet?, defStyleAttr: Int) : View(co
             }
             MotionEvent.ACTION_MOVE -> {
                 touchPoint = Coordinates(event.x.toDouble(), event.y.toDouble())
-                if (selectedForce != null)
-                    draw(selectedForce!!, touchPoint)
+                println("X: " + touchPoint.cood_x + " Y: " + touchPoint.cood_y)
+                if (selectedForce != null) {
+                    if (inBitmap(touchPoint))
+                        draw(selectedForce!!, touchPoint)
+                }
             }
             MotionEvent.ACTION_UP -> selectedForce = null
         }
