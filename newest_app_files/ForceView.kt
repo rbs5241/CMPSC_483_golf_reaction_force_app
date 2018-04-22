@@ -79,10 +79,10 @@ constructor(context: Context, attrs: AttributeSet?, defStyleAttr: Int) : View(co
     }
 
     override fun onWindowFocusChanged(hasFocus:Boolean) {
-        // values for swing 1 frame 1. C
+        // values for swing 1 frame 1
         val leftX = convertX1(403.6)
         val leftY = convertY(666.9)
-        val rightX = convertX2(489.69)
+        val rightX = convertX1(489.69)
         val rightY = convertY(663.9)
         val sumX = sumStartX + (leftX - leftStartX) + (rightX - rightStartX)
         val sumY = panel - ((panel - leftY) + (panel - rightY))
@@ -145,13 +145,19 @@ constructor(context: Context, attrs: AttributeSet?, defStyleAttr: Int) : View(co
     }
 
     internal fun draw(frame: HashMap<String, Double>) {
+
         val leftX = convertX1(frame["leftX"])
         val leftY = convertY(frame["leftY"])
-        val rightX = convertX2(frame["rightX"])
+        val rightX = convertX1(frame["rightX"])
         val rightY = convertY(frame["rightY"])
+        /*
+        val leftX = forShits(frame["leftX"])
+        val leftY = forShits(frame["leftY"])
+        val rightX = forShits(frame["rightX"])
+        val rightY = forShits(frame["rightY"])*/
 
         val sumX = sumStartX + (leftX - leftStartX) + (rightX - rightStartX)
-        val sumY = panel - ((panel - leftY) + (panel - rightY))
+        val sumY = panel - ((panel - leftY.toDouble()) + (panel - rightY))
         sumForce.setEndXY(sumX, sumY)
         leftForce.setEndXY(leftX, leftY)
         rightForce.setEndXY(rightX, rightY)
@@ -170,16 +176,16 @@ constructor(context: Context, attrs: AttributeSet?, defStyleAttr: Int) : View(co
         invalidate()
     }
 
-    private fun convertX1(x: Double?): Double {
-        return leftStartX + sumStartX / canvasHeight * x!!
+    private fun forShits(x: Double?): Double {
+        return x!!
     }
 
-    private fun convertX2(x: Double?): Double {
-        return rightStartX + sumStartX / canvasHeight * x!!
+    private fun convertX1(x: Double?): Double {
+        return ((canvasWidth / 1000) * x!!)
     }
 
     private fun convertY(y: Double?): Double {
-        return panel - sumStartX / canvasHeight * y!!
+        return ((canvasHeight / 1000) * y!!) - (canvasHeight * .12)
     }
 
     private fun calSpeed(x: Double, y: Double): Long {
@@ -197,7 +203,7 @@ constructor(context: Context, attrs: AttributeSet?, defStyleAttr: Int) : View(co
             return false
         return true
     }
-    
+
     override fun onTouchEvent(event: MotionEvent): Boolean {
         val touchPoint: Coordinates
         when (event.action) {
@@ -229,9 +235,9 @@ constructor(context: Context, attrs: AttributeSet?, defStyleAttr: Int) : View(co
         val leftTextBox = r.findViewById<TextView>(R.id.editLeftFoot)
         val rightTextBox = r.findViewById<TextView>(R.id.editRightFoot)
         val sumTextBox = r.findViewById<TextView>(R.id.editResultant)
-        leftTextBox.text = calMag(leftForce.endXY.cood_x - leftForce.startXY.cood_x,canvasHeight - leftForce.endXY.cood_y).toInt().toString()
-        rightTextBox.text = calMag(rightForce.endXY.cood_x - rightForce.startXY.cood_x ,canvasHeight - rightForce.endXY.cood_y).toInt().toString()
-        sumTextBox.text = calMag(sumForce.endXY.cood_x,sumForce.endXY.cood_y).toInt().toString()
+        leftTextBox.text = calMag(leftForce.endXY.cood_x - leftForce.startXY.cood_x,panel - leftForce.endXY.cood_y).toInt().toString()
+        rightTextBox.text = calMag(rightForce.endXY.cood_x - rightForce.startXY.cood_x ,panel - rightForce.endXY.cood_y).toInt().toString()
+        sumTextBox.text = calMag(sumForce.endXY.cood_x - sumForce.startXY.cood_x,panel - sumForce.endXY.cood_y).toInt().toString()
     }
 
     private fun calMag(x : Double, y : Double): Double {
