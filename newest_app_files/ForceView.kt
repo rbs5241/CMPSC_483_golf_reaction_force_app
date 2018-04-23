@@ -81,8 +81,8 @@ constructor(context: Context, attrs: AttributeSet?, defStyleAttr: Int) : View(co
         super.onSizeChanged(w, h, oldw, oldh)
         initPosition(w, h)
         configPaint()
-        globalWidth = w.toDouble()
-        globalHeight = h.toDouble()
+        globalWidth = w.toDouble()      //for changing between views
+        globalHeight = h.toDouble()     //for changing between views
     }
 
     override fun onWindowFocusChanged(hasFocus:Boolean) {
@@ -150,6 +150,9 @@ constructor(context: Context, attrs: AttributeSet?, defStyleAttr: Int) : View(co
                 rightCyclePaint)
 
         canvas.drawBitmap(mBitmap!!, 0f, 0f, null)
+
+        setTextBox()                    //init the force boxes on open
+
     }
 
     internal fun draw(frame: HashMap<String, Double>) {
@@ -176,15 +179,7 @@ constructor(context: Context, attrs: AttributeSet?, defStyleAttr: Int) : View(co
 
     internal fun setBase(v: String){
         if (v == "top") {
-            val startLeftX = 450.0
-            val startLeftY = 425.0
-            val startRightX = 600.0
-            val startRightY = 425.0
-            val startResX = 525.0
-            val startResY = 425.0
-            leftForce.setStartXY(startLeftX, startLeftY) //Kotlin smart cast to double
-            rightForce.setStartXY(startRightX, startRightY)
-            sumForce.setStartXY(startResX, startResY)
+            initPosition(globalWidth.toInt(), (globalHeight*0.55).toInt())
         } else {
             initPosition(globalWidth.toInt(), globalHeight.toInt())
         }
