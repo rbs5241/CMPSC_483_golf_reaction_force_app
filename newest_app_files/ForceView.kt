@@ -42,6 +42,11 @@ constructor(context: Context, attrs: AttributeSet?, defStyleAttr: Int) : View(co
 
     private var mBitmap: Bitmap? = null
 
+    //for changing views
+    private var globalWidth: Double = 0.0
+    private var globalHeight: Double = 0.0
+
+
 
     @JvmOverloads constructor(context: Context, attrs: AttributeSet? = null) : this(context, attrs, 0)
 
@@ -76,6 +81,8 @@ constructor(context: Context, attrs: AttributeSet?, defStyleAttr: Int) : View(co
         super.onSizeChanged(w, h, oldw, oldh)
         initPosition(w, h)
         configPaint()
+        globalWidth = w.toDouble()
+        globalHeight = h.toDouble()
     }
 
     override fun onWindowFocusChanged(hasFocus:Boolean) {
@@ -92,13 +99,14 @@ constructor(context: Context, attrs: AttributeSet?, defStyleAttr: Int) : View(co
         invalidate()
     }
 
-    fun initPosition(w: Int, h: Int) {
+    private fun initPosition(w: Int, h: Int) {
         canvasWidth = w.toDouble()
         canvasHeight = h.toDouble()
         leftStartX = canvasWidth * 0.38
         rightStartX = canvasWidth *0.58
         sumStartX = canvasWidth *0.48
         panel = canvasHeight * 0.88
+        configPaint()
     }
 
     override fun onDraw(canvas: Canvas) {
@@ -164,6 +172,22 @@ constructor(context: Context, attrs: AttributeSet?, defStyleAttr: Int) : View(co
         setTextBox()
         setSpinner(calSpeed(sumX, sumY))
         invalidate()
+    }
+
+    internal fun setBase(v: String){
+        if (v == "top") {
+            val startLeftX = 450.0
+            val startLeftY = 425.0
+            val startRightX = 600.0
+            val startRightY = 425.0
+            val startResX = 525.0
+            val startResY = 425.0
+            leftForce.setStartXY(startLeftX, startLeftY) //Kotlin smart cast to double
+            rightForce.setStartXY(startRightX, startRightY)
+            sumForce.setStartXY(startResX, startResY)
+        } else {
+            initPosition(globalWidth.toInt(), globalHeight.toInt())
+        }
     }
 
     private fun draw(force: ForceLine, coord: Coordinates) {

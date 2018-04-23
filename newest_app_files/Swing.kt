@@ -158,6 +158,7 @@ class Swing(private var forceView: ForceView, imageView: ImageView) {
 
     internal fun switchView(v : String) {
         curView = v
+        forceView.setBase(curView)
         setBackground()
     }
 
