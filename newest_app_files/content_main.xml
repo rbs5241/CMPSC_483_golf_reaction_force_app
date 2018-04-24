@@ -168,8 +168,9 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.465"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="@+id/imgView" />
-
+        app:layout_constraintTop_toTopOf="@+id/imgView"
+        android:indeterminate="true"
+        android:indeterminateDrawable="@drawable/spinner" />
 
     <Button
         android:id="@+id/backward"
