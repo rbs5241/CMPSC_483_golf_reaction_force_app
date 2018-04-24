@@ -12,6 +12,7 @@ import android.util.Log
 import android.view.MotionEvent
 import android.view.View
 import android.view.animation.LinearInterpolator
+import android.view.animation.Interpolator
 import android.widget.TextView
 import java.lang.Math.abs
 import java.util.*
@@ -285,18 +286,24 @@ constructor(context: Context, attrs: AttributeSet?, defStyleAttr: Int) : View(co
         return Math.sqrt(x * x + y * y)
     }
 
+    class ReverseInterpolator:Interpolator {
+        override fun getInterpolation(paramFloat:Float):Float {
+            return Math.abs(paramFloat - 1f)
+        }
+    }
+    
     private fun setSpinner(duration:Long) {
         val r = this.parent as ConstraintLayout
         spinnerAnimator = ObjectAnimator.ofFloat(r.findViewById(R.id.progressBar),
                 "rotation", 0f, 360f)
-        spinnerAnimator.duration = duration
         if (moment < 0)
         {
-            spinnerAnimator.repeatMode = ObjectAnimator.REVERSE
-            println("hi")
+            spinnerAnimator.interpolator = ReverseInterpolator()
         }
+        else
+            spinnerAnimator.interpolator = LinearInterpolator()
+        spinnerAnimator.duration = duration
         spinnerAnimator.repeatCount = ValueAnimator.INFINITE
-        spinnerAnimator.interpolator = LinearInterpolator()
         spinnerAnimator.start()
     }
 }
