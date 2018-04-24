@@ -98,6 +98,7 @@ constructor(context: Context, attrs: AttributeSet?, defStyleAttr: Int) : View(co
         sumForce.setEndXY(sumX, sumY)
         leftForce.setEndXY(leftX, leftY)
         rightForce.setEndXY(rightX, rightY)
+        setSpinner(calSpeed(sumX, sumY))
         invalidate()
     }
 
