@@ -42,6 +42,8 @@ constructor(context: Context, attrs: AttributeSet?, defStyleAttr: Int) : View(co
 
     private var mBitmap: Bitmap? = null
 
+    private var moment: Long = 0.0.toLong()
+
     //for changing views
     private var globalWidth: Double = 0.0
     private var globalHeight: Double = 0.0
@@ -209,10 +211,11 @@ constructor(context: Context, attrs: AttributeSet?, defStyleAttr: Int) : View(co
 
     private fun calSpeed(x: Double, y: Double): Long {
         val r = this.parent as ConstraintLayout
-        val speedVal = ((2000 - Math.sqrt((x - sumStartX) * (x - sumStartX) + (y - panel) * (y - panel)))).toLong()
+        val speedVal = (((panel - leftForce.endXY.cood_y) * (sumStartX - leftStartX)) - ((panel - rightForce.endXY.cood_y) * (rightStartX - sumStartX))).toLong()
         val frontalMomentText = r.findViewById<TextView>(R.id.editFrontal)
         frontalMomentText.text = speedVal.toString()
-        return speedVal
+        moment = speedVal
+        return (((panel * (sumStartX - leftStartX)).toLong() - abs(speedVal)) / 100.toLong())
     }
 
     private fun inRegion(touch: Coordinates, force: Coordinates): Boolean {
@@ -283,6 +286,11 @@ constructor(context: Context, attrs: AttributeSet?, defStyleAttr: Int) : View(co
         spinnerAnimator = ObjectAnimator.ofFloat(r.findViewById(R.id.progressBar),
                 "rotation", 0f, 360f)
         spinnerAnimator.duration = duration
+        if (moment < 0)
+        {
+            spinnerAnimator.repeatMode = ObjectAnimator.REVERSE
+            println("hi")
+        }
         spinnerAnimator.repeatCount = ValueAnimator.INFINITE
         spinnerAnimator.interpolator = LinearInterpolator()
         spinnerAnimator.start()
