@@ -114,6 +114,7 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         }
         val swingString = findViewById<TextView>(R.id.swingString)
         swingString.text = "TAKE AWAY"
+        swing.switchView("front")
         drawer_layout.closeDrawer(GravityCompat.START)
         return true
     }
