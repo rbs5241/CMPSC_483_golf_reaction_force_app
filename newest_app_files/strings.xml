@@ -3,6 +3,7 @@
     <string name="leftFoot">LEFT FORCE</string>
     <string name="rightFoot">RIGHT FORCE</string>
     <string name="resultant">RESULTANT</string>
+    <string name="frontal">FRONTAL MOMENT</string>
     <string name="zeros">000</string>
     <string name="play">Play</string>
     <string name="pause">Pause</string>

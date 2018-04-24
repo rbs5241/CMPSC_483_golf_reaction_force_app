@@ -208,7 +208,11 @@ constructor(context: Context, attrs: AttributeSet?, defStyleAttr: Int) : View(co
 
 
     private fun calSpeed(x: Double, y: Double): Long {
-        return ((2000 - Math.sqrt((x - sumStartX) * (x - sumStartX) + (y - panel) * (y - panel)))).toLong()
+        val r = this.parent as ConstraintLayout
+        val speedVal = ((2000 - Math.sqrt((x - sumStartX) * (x - sumStartX) + (y - panel) * (y - panel)))).toLong()
+        val frontalMomentText = r.findViewById<TextView>(R.id.editFrontal)
+        frontalMomentText.text = speedVal.toString()
+        return speedVal
     }
 
     private fun inRegion(touch: Coordinates, force: Coordinates): Boolean {
