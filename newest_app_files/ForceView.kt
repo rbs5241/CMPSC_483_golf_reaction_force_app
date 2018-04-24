@@ -255,12 +255,23 @@ constructor(context: Context, attrs: AttributeSet?, defStyleAttr: Int) : View(co
 
     private fun setTextBox() {
         val r = this.parent as ConstraintLayout
-        val leftTextBox = r.findViewById<TextView>(R.id.editLeftFoot)
+        val leftTextBox = (r.findViewById<TextView>(R.id.editLeftFoot))
         val rightTextBox = r.findViewById<TextView>(R.id.editRightFoot)
         val sumTextBox = r.findViewById<TextView>(R.id.editResultant)
-        leftTextBox.text = calMag(convertXBack(leftForce.endXY.cood_x - leftForce.startXY.cood_x),convertYBack(panel - leftForce.endXY.cood_y)).toInt().toString()
-        rightTextBox.text = calMag(convertXBack(rightForce.endXY.cood_x - rightForce.startXY.cood_x) ,convertYBack(panel - rightForce.endXY.cood_y)).toInt().toString()
-        sumTextBox.text = calMag(convertXBack(sumForce.endXY.cood_x - sumForce.startXY.cood_x),convertYBack(panel - sumForce.endXY.cood_y)).toInt().toString()
+        val leftEndX = convertXBack(leftForce.endXY.cood_x)
+        val leftStartX = convertXBack(leftForce.startXY.cood_x)
+        val panelConv = convertYBack(panel)
+        val leftEndY = convertYBack(leftForce.endXY.cood_y)
+        val rightEndX = convertXBack(rightForce.endXY.cood_x)
+        val rightStartX = convertXBack(rightForce.startXY.cood_x)
+        val rightEndY = convertYBack(rightForce.endXY.cood_y)
+        val sumEndX = convertXBack(sumForce.endXY.cood_x)
+        val sumStartX = convertXBack(sumForce.startXY.cood_x)
+        val sumEndY = convertYBack(sumForce.endXY.cood_y)
+
+        leftTextBox.text = calMag(leftEndX - leftStartX, panelConv - leftEndY).toInt().toString()
+        rightTextBox.text = calMag(rightEndX - rightStartX ,panelConv - rightEndY).toInt().toString()
+        sumTextBox.text =   calMag(sumEndX - sumStartX,panelConv - sumEndY).toInt().toString()
     }
 
     private fun calMag(x : Double, y : Double): Double {
