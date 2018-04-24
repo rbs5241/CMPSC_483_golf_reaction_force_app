@@ -215,7 +215,10 @@ constructor(context: Context, attrs: AttributeSet?, defStyleAttr: Int) : View(co
         val frontalMomentText = r.findViewById<TextView>(R.id.editFrontal)
         frontalMomentText.text = speedVal.toString()
         moment = speedVal
-        return (((panel * (sumStartX - leftStartX)).toLong() - abs(speedVal)) / 100.toLong())
+        val returnVal = (((panel * (sumStartX - leftStartX)).toLong() - abs(speedVal)) / 100.toLong())
+        if (returnVal <= 0)
+            return 0.01.toLong()
+        else return returnVal
     }
 
     private fun inRegion(touch: Coordinates, force: Coordinates): Boolean {
