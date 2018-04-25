@@ -54,12 +54,12 @@ constructor(context: Context, attrs: AttributeSet?, defStyleAttr: Int) : View(co
     @JvmOverloads constructor(context: Context, attrs: AttributeSet? = null) : this(context, attrs, 0)
 
     private fun configPaint() {
-        leftForcePaint.color = Color.BLUE
+        leftForcePaint.color = Color.RED
         leftForcePaint.strokeWidth = 10f
         leftForce.setStartXY(leftStartX, panel)
         leftForce.setEndXY(leftStartX, panel)
 
-        rightForcePaint.color = Color.RED
+        rightForcePaint.color = Color.BLUE
         rightForcePaint.strokeWidth = 10f
         rightForce.setStartXY(rightStartX, panel)
         rightForce.setEndXY(rightStartX, panel)
@@ -69,8 +69,8 @@ constructor(context: Context, attrs: AttributeSet?, defStyleAttr: Int) : View(co
         sumForce.setStartXY(sumStartX, panel)
         sumForce.setEndXY(sumStartX, panel)
 
-        leftCyclePaint.color = Color.BLUE
-        rightCyclePaint.color = Color.RED
+        leftCyclePaint.color = Color.RED
+        rightCyclePaint.color = Color.BLUE
     }
 
 
@@ -176,11 +176,18 @@ constructor(context: Context, attrs: AttributeSet?, defStyleAttr: Int) : View(co
         invalidate()
     }
 
-    internal fun setBase(v: String){
+    internal fun setBase(v: String){ //Called when we switch between bases
+        val r = this.parent as ConstraintLayout
+        val leftForceTitle = (r.findViewById<TextView>(R.id.leftTitle))
+        val rightForceTitle = (r.findViewById<TextView>(R.id.rightTitle))
         if (v == "top") {
             initPosition(globalWidth.toInt(), (globalHeight*0.55).toInt())
+            leftForceTitle.text = resources.getString(R.string.leftFoot)
+            rightForceTitle.text = resources.getString(R.string.rightFoot)
         } else {
             initPosition(globalWidth.toInt(), globalHeight.toInt())
+            leftForceTitle.text = resources.getString(R.string.rightFoot)
+            rightForceTitle.text = resources.getString(R.string.leftFoot)
         }
     }
 
@@ -296,7 +303,7 @@ constructor(context: Context, attrs: AttributeSet?, defStyleAttr: Int) : View(co
         val r = this.parent as ConstraintLayout
         spinnerAnimator = ObjectAnimator.ofFloat(r.findViewById(R.id.progressBar),
                 "rotation", 0f, 360f)
-        if (moment <= 0)
+        if (sumForce.endXY.cood_x < (globalWidth/2))
         {
             spinnerAnimator.interpolator = LinearInterpolator()
         }
