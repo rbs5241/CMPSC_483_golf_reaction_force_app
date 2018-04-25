@@ -215,7 +215,7 @@ constructor(context: Context, attrs: AttributeSet?, defStyleAttr: Int) : View(co
         val r = this.parent as ConstraintLayout
         val speedVal = (((panel - leftForce.endXY.cood_y) * (sumStartX - leftStartX)) - ((panel - rightForce.endXY.cood_y) * (rightStartX - sumStartX))).toLong()
         val frontalMomentText = r.findViewById<TextView>(R.id.editFrontal)
-        frontalMomentText.text = speedVal.toString()
+        frontalMomentText.text = (speedVal / 100).toString()
         moment = speedVal
         val returnVal = (((panel * (sumStartX - leftStartX)).toLong() - abs(speedVal)) / 100.toLong())
         if (returnVal <= 0)
@@ -291,17 +291,17 @@ constructor(context: Context, attrs: AttributeSet?, defStyleAttr: Int) : View(co
             return Math.abs(paramFloat - 1f)
         }
     }
-    
+
     private fun setSpinner(duration:Long) {
         val r = this.parent as ConstraintLayout
         spinnerAnimator = ObjectAnimator.ofFloat(r.findViewById(R.id.progressBar),
                 "rotation", 0f, 360f)
-        if (moment < 0)
+        if (moment <= 0)
         {
-            spinnerAnimator.interpolator = ReverseInterpolator()
+            spinnerAnimator.interpolator = LinearInterpolator()
         }
         else
-            spinnerAnimator.interpolator = LinearInterpolator()
+            spinnerAnimator.interpolator = ReverseInterpolator()
         spinnerAnimator.duration = duration
         spinnerAnimator.repeatCount = ValueAnimator.INFINITE
         spinnerAnimator.start()
