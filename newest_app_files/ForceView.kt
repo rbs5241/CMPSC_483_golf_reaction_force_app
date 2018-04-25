@@ -344,7 +344,7 @@ constructor(context: Context, attrs: AttributeSet?, defStyleAttr: Int) : View(co
         val r = this.parent as ConstraintLayout
         spinnerAnimator = ObjectAnimator.ofFloat(r.findViewById(R.id.progressBar),
                 "rotation", 0f, 360f)
-        if (sumForce.endXY.cood_x < (globalWidth/2))
+        if (sumForce.endXY.cood_x < ((globalWidth/2)-40))
         {
             spinnerAnimator.interpolator = LinearInterpolator()
         }
