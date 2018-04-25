@@ -1,175 +1,354 @@
 package golf.golf_app_2
 
-import android.widget.ImageView
+import android.animation.ObjectAnimator
+import android.animation.ValueAnimator
+import android.annotation.TargetApi
+import android.content.Context
+import android.graphics.*
+import android.os.Build
+import android.support.constraint.ConstraintLayout
+import android.util.AttributeSet
+import android.util.Log
+import android.view.MotionEvent
+import android.view.View
+import android.view.animation.LinearInterpolator
+import android.view.animation.Interpolator
+import android.widget.TextView
+import java.lang.Math.abs
+import java.util.*
 
-class Swing(private var forceView: ForceView, imageView: ImageView) {
-    internal var curFrame = 0
-    private var curSwing = 0
-    internal var curView = "front"
 
-    private var imgView = imageView
+class ForceView @TargetApi(Build.VERSION_CODES.KITKAT)
+constructor(context: Context, attrs: AttributeSet?, defStyleAttr: Int) : View(context, attrs, defStyleAttr) {
+    private var mCanvas: Canvas? = null
+    private lateinit var spinnerAnimator: ObjectAnimator
 
-    // swing images
-    private val sw1FrontImg: Array<Int> = arrayOf(R.drawable.sw1_front_1, R.drawable.sw1_front_2, R.drawable.sw1_front_3,R.drawable.sw1_front_4, R.drawable.sw1_front_5, R.drawable.sw1_front_6, R.drawable.sw1_front_7)
-    private val sw1TopImg: Array<Int> = arrayOf(R.drawable.sw1_top_1, R.drawable.sw1_top_2, R.drawable.sw1_top_3,R.drawable.sw1_top_4, R.drawable.sw1_top_5, R.drawable.sw1_top_6, R.drawable.sw1_top_7)
-    private val sw1Img: HashMap<String, Array<Int>> = hashMapOf("front" to sw1FrontImg, "top" to sw1TopImg)
+    private val leftForce: ForceLine = ForceLine()
+    private val rightForce: ForceLine = ForceLine()
+    private val sumForce: ForceLine = ForceLine()
+    private var selectedForce: ForceLine? = null
 
-    private val sw2FrontImg: Array<Int> = arrayOf(R.drawable.sw2_front_1, R.drawable.sw2_front_2, R.drawable.sw2_front_3,R.drawable.sw2_front_4, R.drawable.sw2_front_5, R.drawable.sw2_front_6, R.drawable.sw2_front_7)
-    private val sw2TopImg: Array<Int> = arrayOf(R.drawable.sw2_top_1, R.drawable.sw2_top_2, R.drawable.sw2_top_3,R.drawable.sw2_top_4, R.drawable.sw2_top_5, R.drawable.sw2_top_6, R.drawable.sw2_top_7)
-    private val sw2Img: HashMap<String, Array<Int>> = hashMapOf("front" to sw2FrontImg, "top" to sw2TopImg)
+    private var leftForcePaint: Paint = Paint()
+    private var rightForcePaint: Paint = Paint()
+    private var sumForcePaint: Paint = Paint()
+    private var leftCyclePaint: Paint = Paint()
+    private var rightCyclePaint: Paint = Paint()
 
-    private val sw3FrontImg: Array<Int> = arrayOf(R.drawable.sw3_front_1, R.drawable.sw3_front_2, R.drawable.sw3_front_3,R.drawable.sw3_front_4, R.drawable.sw3_front_5, R.drawable.sw3_front_6, R.drawable.sw3_front_7)
-    private val sw3TopImg: Array<Int> = arrayOf(R.drawable.sw3_top_1, R.drawable.sw3_top_2, R.drawable.sw3_top_3,R.drawable.sw3_top_4, R.drawable.sw3_top_5, R.drawable.sw3_top_6, R.drawable.sw3_top_7)
-    private val sw3Img: HashMap<String, Array<Int>> = hashMapOf("front" to sw3FrontImg, "top" to sw3TopImg)
+    private var canvasWidth: Double = 0.0
+    private var canvasHeight: Double = 0.0
+    private var leftStartX: Double = 0.0
+    private var rightStartX: Double = 0.0
+    private var sumStartX: Double = 0.0
+    private var panel: Double = 0.0
 
-    private val sw4FrontImg: Array<Int> = arrayOf(R.drawable.sw4_front_1, R.drawable.sw4_front_2, R.drawable.sw4_front_3,R.drawable.sw4_front_4, R.drawable.sw4_front_5, R.drawable.sw4_front_6, R.drawable.sw4_front_7)
-    private val sw4TopImg: Array<Int> = arrayOf(R.drawable.sw4_top_1, R.drawable.sw4_top_2, R.drawable.sw4_top_3,R.drawable.sw4_top_4, R.drawable.sw4_top_5, R.drawable.sw4_top_6, R.drawable.sw4_top_7)
-    private val sw4Img: HashMap<String, Array<Int>> = hashMapOf("front" to sw4FrontImg, "top" to sw4TopImg)
+    private var mBitmap: Bitmap? = null
 
-    private val sw5FrontImg: Array<Int> = arrayOf(R.drawable.sw5_front_1, R.drawable.sw5_front_2, R.drawable.sw5_front_3,R.drawable.sw5_front_4, R.drawable.sw5_front_5, R.drawable.sw5_front_6, R.drawable.sw5_front_7)
-    private val sw5TopImg: Array<Int> = arrayOf(R.drawable.sw5_top_1, R.drawable.sw5_top_2, R.drawable.sw5_top_3,R.drawable.sw5_top_4, R.drawable.sw5_top_5, R.drawable.sw5_top_6, R.drawable.sw5_top_7)
-    private val sw5Img: HashMap<String, Array<Int>> = hashMapOf("front" to sw5FrontImg, "top" to sw5TopImg)
+    private var moment: Long = 0.0.toLong()
 
-    private val sw6FrontImg: Array<Int> = arrayOf(R.drawable.sw6_front_1, R.drawable.sw6_front_2, R.drawable.sw6_front_3,R.drawable.sw6_front_4, R.drawable.sw6_front_5, R.drawable.sw6_front_6, R.drawable.sw6_front_7)
-    private val sw6TopImg: Array<Int> = arrayOf(R.drawable.sw6_top_1, R.drawable.sw6_top_2, R.drawable.sw6_top_3,R.drawable.sw6_top_4, R.drawable.sw6_top_5, R.drawable.sw6_top_6, R.drawable.sw6_top_7)
-    private val sw6Img: HashMap<String, Array<Int>> = hashMapOf("front" to sw6FrontImg, "top" to sw6TopImg)
+    //for changing views
+    private var globalWidth: Double = 0.0
+    private var globalHeight: Double = 0.0
 
-    private val swingImg: HashMap<Int, HashMap<String, Array<Int>>> = hashMapOf(0 to sw1Img, 1 to sw2Img, 2 to sw3Img, 3 to sw4Img, 4 to sw5Img, 5 to sw6Img)
 
-    // swing frames
-    private val sw1FrontFrame1: HashMap<String, Double> = hashMapOf("leftX" to 403.60938, "leftY" to 666.9884973, "rightX" to 489.69558, "rightY" to 663.9133245)
-    private val sw1FrontFrame2: HashMap<String, Double> = hashMapOf("leftX" to 460.3741527, "leftY" to 545.2661964, "rightX" to 556.30849, "rightY" to 772.0259927)
-    private val sw1FrontFrame3: HashMap<String, Double> = hashMapOf("leftX" to 459.9356082, "leftY" to 554.4063773, "rightX" to 578.3204082, "rightY" to 821.6139773)
-    private val sw1FrontFrame4: HashMap<String, Double> = hashMapOf("leftX" to 483.1427973, "leftY" to 624.4238282, "rightX" to 618.2107318, "rightY" to 823.7485436)
-    private val sw1FrontFrame5: HashMap<String, Double> = hashMapOf("leftX" to 495.9087236, "leftY" to 585.4331555, "rightX" to 510.5346818, "rightY" to 245.0886118)
-    private val sw1FrontFrame6: HashMap<String, Double> = hashMapOf("leftX" to 401.3407655, "leftY" to 813.6020873, "rightX" to 433.3239745, "rightY" to 178.4925982)
-    private val sw1FrontFrame7: HashMap<String, Double> = hashMapOf("leftX" to 453.60938, "leftY" to 895.0579073, "rightX" to 529.1250055, "rightY" to 560.5403555)
-    private val sw1Front: HashMap<Int, HashMap<String, Double>> = hashMapOf(0 to sw1FrontFrame1, 1 to sw1FrontFrame2, 2 to sw1FrontFrame3, 3 to sw1FrontFrame4, 4 to sw1FrontFrame5, 5 to sw1FrontFrame6, 6 to sw1FrontFrame7)
-    private val sw1TopFrame1: HashMap<String, Double> = hashMapOf("leftX" to 504.00, "leftY" to 640.00, "rightX" to 540.00, "rightY" to 654.00)
-    private val sw1TopFrame2: HashMap<String, Double> = hashMapOf("leftX" to 660.00, "leftY" to 633.00, "rightX" to 354.00, "rightY" to 663.00)
-    private val sw1TopFrame3: HashMap<String, Double> = hashMapOf("leftX" to 510.00, "leftY" to 650.00, "rightX" to 578.00, "rightY" to 653.00)
-    private val sw1TopFrame4: HashMap<String, Double> = hashMapOf("leftX" to 533.00, "leftY" to 688.00, "rightX" to 618.00, "rightY" to 638.00)
-    private val sw1TopFrame5: HashMap<String, Double> = hashMapOf("leftX" to 546.00, "leftY" to 776.00, "rightX" to 511.00, "rightY" to 409.00)
-    private val sw1TopFrame6: HashMap<String, Double> = hashMapOf("leftX" to 451.00, "leftY" to 718.00, "rightX" to 433.00, "rightY" to 595.00)
-    private val sw1TopFrame7: HashMap<String, Double> = hashMapOf("leftX" to 417.00, "leftY" to 684.00, "rightX" to 529.00, "rightY" to 704.00)
-    private val sw1Top: HashMap<Int, HashMap<String, Double>> = hashMapOf(0 to sw1TopFrame1, 1 to sw1TopFrame2, 2 to sw1TopFrame3, 3 to sw1TopFrame4, 4 to sw1TopFrame5, 5 to sw1TopFrame6, 6 to sw1TopFrame7)
-    private val swing1: HashMap<String, HashMap<Int, HashMap<String, Double>>> = hashMapOf("front" to sw1Front, "top" to sw1Top)
 
-    private val sw2FrontFrame1: HashMap<String, Double> = hashMapOf("leftX" to 488.00, "leftY" to 451.00, "rightX" to 414.00, "rightY" to 479.00)
-    private val sw2FrontFrame2: HashMap<String, Double> = hashMapOf("leftX" to 490.00, "leftY" to 364.00, "rightX" to 410.00, "rightY" to 547.00)
-    private val sw2FrontFrame3: HashMap<String, Double> = hashMapOf("leftX" to 499.00, "leftY" to 269.00, "rightX" to 437.00, "rightY" to 664.00)
-    private val sw2FrontFrame4: HashMap<String, Double> = hashMapOf("leftX" to 513.00, "leftY" to 242.00, "rightX" to 446.00, "rightY" to 682.00)
-    private val sw2FrontFrame5: HashMap<String, Double> = hashMapOf("leftX" to 417.00, "leftY" to 583.00, "rightX" to 322.00, "rightY" to 225.00)
-    private val sw2FrontFrame6: HashMap<String, Double> = hashMapOf("leftX" to 428.00, "leftY" to 417.00, "rightX" to 429.00, "rightY" to 326.00)
-    private val sw2FrontFrame7: HashMap<String, Double> = hashMapOf("leftX" to 480.00, "leftY" to 159.00, "rightX" to 514.00, "rightY" to 609.00)
-    private val sw2Front: HashMap<Int, HashMap<String, Double>> = hashMapOf(0 to sw2FrontFrame1, 1 to sw2FrontFrame2, 2 to sw2FrontFrame3, 3 to sw2FrontFrame4, 4 to sw2FrontFrame5, 5 to sw2FrontFrame6, 6 to sw2FrontFrame7)
-    private val sw2TopFrame1: HashMap<String, Double> = hashMapOf("leftX" to 573.00, "leftY" to 658.00, "rightX" to 469.00, "rightY" to 625.00)
-    private val sw2TopFrame2: HashMap<String, Double> = hashMapOf("leftX" to 575.00, "leftY" to 638.00, "rightX" to 466.00, "rightY" to 661.00)
-    private val sw2TopFrame3: HashMap<String, Double> = hashMapOf("leftX" to 584.00, "leftY" to 662.00, "rightX" to 491.00, "rightY" to 629.00)
-    private val sw2TopFrame4: HashMap<String, Double> = hashMapOf("leftX" to 597.00, "leftY" to 693.00, "rightX" to 500.00, "rightY" to 626.00)
-    private val sw2TopFrame5: HashMap<String, Double> = hashMapOf("leftX" to 505.00, "leftY" to 836.00, "rightX" to 381.00, "rightY" to 342.00)
-    private val sw2TopFrame6: HashMap<String, Double> = hashMapOf("leftX" to 516.00, "leftY" to 742.00, "rightX" to 483.00, "rightY" to 596.00)
-    private val sw2TopFrame7: HashMap<String, Double> = hashMapOf("leftX" to 565.00, "leftY" to 678.00, "rightX" to 565.00, "rightY" to 728.00)
-    private val sw2Top: HashMap<Int, HashMap<String, Double>> = hashMapOf(0 to sw2TopFrame1, 1 to sw2TopFrame2, 2 to sw2TopFrame3, 3 to sw2TopFrame4, 4 to sw2TopFrame5, 5 to sw2TopFrame6, 6 to sw2TopFrame7)
-    private val swing2: HashMap<String, HashMap<Int, HashMap<String, Double>>> = hashMapOf("front" to sw2Front, "top" to sw2Top)
+    @JvmOverloads constructor(context: Context, attrs: AttributeSet? = null) : this(context, attrs, 0)
 
-    private val sw3FrontFrame1: HashMap<String, Double> = hashMapOf("leftX" to 334.00, "leftY" to 676.00, "rightX" to 429.00, "rightY" to 467.00)
-    private val sw3FrontFrame2: HashMap<String, Double> = hashMapOf("leftX" to 390.00, "leftY" to 286.00, "rightX" to 492.00, "rightY" to 795.00)
-    private val sw3FrontFrame3: HashMap<String, Double> = hashMapOf("leftX" to 366.00, "leftY" to 424.00, "rightX" to 523.00, "rightY" to 807.00)
-    private val sw3FrontFrame4: HashMap<String, Double> = hashMapOf("leftX" to 442.00, "leftY" to 466.00, "rightX" to 542.00, "rightY" to 815.00)
-    private val sw3FrontFrame5: HashMap<String, Double> = hashMapOf("leftX" to 409.00, "leftY" to 570.00, "rightX" to 444.00, "rightY" to 144.00)
-    private val sw3FrontFrame6: HashMap<String, Double> = hashMapOf("leftX" to 337.00, "leftY" to 612.00, "rightX" to 398.00, "rightY" to 349.00)
-    private val sw3FrontFrame7: HashMap<String, Double> = hashMapOf("leftX" to 273.00, "leftY" to 677.00, "rightX" to 460.00, "rightY" to 720.00)
-    private val sw3Front: HashMap<Int, HashMap<String, Double>> = hashMapOf(0 to sw3FrontFrame1, 1 to sw3FrontFrame2, 2 to sw3FrontFrame3, 3 to sw3FrontFrame4, 4 to sw3FrontFrame5, 5 to sw3FrontFrame6, 6 to sw3FrontFrame7)
-    private val sw3TopFrame1: HashMap<String, Double> = hashMapOf("leftX" to 424.00, "leftY" to 613.00, "rightX" to 509.00, "rightY" to 587.00)
-    private val sw3TopFrame2: HashMap<String, Double> = hashMapOf("leftX" to 480.00, "leftY" to 553.00, "rightX" to 572.00, "rightY" to 651.00)
-    private val sw3TopFrame3: HashMap<String, Double> = hashMapOf("leftX" to 456.00, "leftY" to 599.00, "rightX" to 603.00, "rightY" to 594.00)
-    private val sw3TopFrame4: HashMap<String, Double> = hashMapOf("leftX" to 532.00, "leftY" to 659.00, "rightX" to 622.00, "rightY" to 547.00)
-    private val sw3TopFrame5: HashMap<String, Double> = hashMapOf("leftX" to 499.00, "leftY" to 758.00, "rightX" to 524.00, "rightY" to 481.00)
-    private val sw3TopFrame6: HashMap<String, Double> = hashMapOf("leftX" to 427.00, "leftY" to 619.00, "rightX" to 478.00, "rightY" to 534.00)
-    private val sw3TopFrame7: HashMap<String, Double> = hashMapOf("leftX" to 363.00, "leftY" to 622.00, "rightX" to 540.00, "rightY" to 591.00)
-    private val sw3Top: HashMap<Int, HashMap<String, Double>> = hashMapOf(0 to sw3TopFrame1, 1 to sw3TopFrame2, 2 to sw3TopFrame3, 3 to sw3TopFrame4, 4 to sw3TopFrame5, 5 to sw3TopFrame6, 6 to sw3TopFrame7)
-    private val swing3: HashMap<String, HashMap<Int, HashMap<String, Double>>> = hashMapOf("front" to sw3Front, "top" to sw3Top)
+    private fun configPaint() {
+        leftForcePaint.color = Color.BLUE
+        leftForcePaint.strokeWidth = 10f
+        leftForce.setStartXY(leftStartX, panel)
+        leftForce.setEndXY(leftStartX, panel)
 
-    private val sw4FrontFrame1: HashMap<String, Double> = hashMapOf("leftX" to 460.00, "leftY" to 626.00, "rightX" to 530.00, "rightY" to 686.00)
-    private val sw4FrontFrame2: HashMap<String, Double> = hashMapOf("leftX" to 466.00, "leftY" to 461.00, "rightX" to 559.00, "rightY" to 818.00)
-    private val sw4FrontFrame3: HashMap<String, Double> = hashMapOf("leftX" to 491.00, "leftY" to 529.00, "rightX" to 553.00, "rightY" to 823.00)
-    private val sw4FrontFrame4: HashMap<String, Double> = hashMapOf("leftX" to 531.00, "leftY" to 520.00, "rightX" to 578.00, "rightY" to 823.00)
-    private val sw4FrontFrame5: HashMap<String, Double> = hashMapOf("leftX" to 498.00, "leftY" to 729.00, "rightX" to 527.00, "rightY" to 430.00)
-    private val sw4FrontFrame6: HashMap<String, Double> = hashMapOf("leftX" to 362.00, "leftY" to 902.00, "rightX" to 473.00, "rightY" to 73.00)
-    private val sw4FrontFrame7: HashMap<String, Double> = hashMapOf("leftX" to 357.00, "leftY" to 897.00, "rightX" to 548.00, "rightY" to 450.00)
-    private val sw4Front: HashMap<Int, HashMap<String, Double>> = hashMapOf(0 to sw4FrontFrame1, 1 to sw4FrontFrame2, 2 to sw4FrontFrame3, 3 to sw4FrontFrame4, 4 to sw4FrontFrame5, 5 to sw4FrontFrame6, 6 to sw4FrontFrame7)
-    private val sw4TopFrame1: HashMap<String, Double> = hashMapOf("leftX" to 460.00, "leftY" to 625.00, "rightX" to 530.00, "rightY" to 663.00)
-    private val sw4TopFrame2: HashMap<String, Double> = hashMapOf("leftX" to 466.00, "leftY" to 591.00, "rightX" to 559.00, "rightY" to 714.00)
-    private val sw4TopFrame3: HashMap<String, Double> = hashMapOf("leftX" to 491.00, "leftY" to 606.00, "rightX" to 553.00, "rightY" to 687.00)
-    private val sw4TopFrame4: HashMap<String, Double> = hashMapOf("leftX" to 531.00, "leftY" to 647.00, "rightX" to 578.00, "rightY" to 648.00)
-    private val sw4TopFrame5: HashMap<String, Double> = hashMapOf("leftX" to 498.00, "leftY" to 729.00, "rightX" to 527.00, "rightY" to 464.00)
-    private val sw4TopFrame6: HashMap<String, Double> = hashMapOf("leftX" to 362.00, "leftY" to 690.00, "rightX" to 473.00, "rightY" to 624.00)
-    private val sw4TopFrame7: HashMap<String, Double> = hashMapOf("leftX" to 357.00, "leftY" to 663.00, "rightX" to 548.00, "rightY" to 664.00)
-    private val sw4Top: HashMap<Int, HashMap<String, Double>> = hashMapOf(0 to sw4TopFrame1, 1 to sw4TopFrame2, 2 to sw4TopFrame3, 3 to sw4TopFrame4, 4 to sw4TopFrame5, 5 to sw4TopFrame6, 6 to sw4TopFrame7)
-    private val swing4: HashMap<String, HashMap<Int, HashMap<String, Double>>> = hashMapOf("front" to sw4Front, "top" to sw4Top)
+        rightForcePaint.color = Color.RED
+        rightForcePaint.strokeWidth = 10f
+        rightForce.setStartXY(rightStartX, panel)
+        rightForce.setEndXY(rightStartX, panel)
 
-    private val sw5FrontFrame1: HashMap<String, Double> = hashMapOf("leftX" to 422.00, "leftY" to 626.00, "rightX" to 453.00, "rightY" to 537.00)
-    private val sw5FrontFrame2: HashMap<String, Double> = hashMapOf("leftX" to 452.00, "leftY" to 393.00, "rightX" to 492.00, "rightY" to 719.00)
-    private val sw5FrontFrame3: HashMap<String, Double> = hashMapOf("leftX" to 436.00, "leftY" to 383.00, "rightX" to 524.00, "rightY" to 802.00)
-    private val sw5FrontFrame4: HashMap<String, Double> = hashMapOf("leftX" to 475.00, "leftY" to 443.00, "rightX" to 579.00, "rightY" to 677.00)
-    private val sw5FrontFrame5: HashMap<String, Double> = hashMapOf("leftX" to 493.00, "leftY" to 692.00, "rightX" to 420.00, "rightY" to 472.00)
-    private val sw5FrontFrame6: HashMap<String, Double> = hashMapOf("leftX" to 351.00, "leftY" to 892.00, "rightX" to 435.00, "rightY" to -146.00)
-    private val sw5FrontFrame7: HashMap<String, Double> = hashMapOf("leftX" to 319.00, "leftY" to 918.00, "rightX" to 444.00, "rightY" to -37.00)
-    private val sw5Front: HashMap<Int, HashMap<String, Double>> = hashMapOf(0 to sw5FrontFrame1, 1 to sw5FrontFrame2, 2 to sw5FrontFrame3, 3 to sw5FrontFrame4, 4 to sw5FrontFrame5, 5 to sw5FrontFrame6, 6 to sw5FrontFrame7)
-    private val sw5TopFrame1: HashMap<String, Double> = hashMapOf("leftX" to 510.00, "leftY" to 631.00, "rightX" to 507.00, "rightY" to 655.00)
-    private val sw5TopFrame2: HashMap<String, Double> = hashMapOf("leftX" to 538.00, "leftY" to 607.00, "rightX" to 544.00, "rightY" to 697.00)
-    private val sw5TopFrame3: HashMap<String, Double> = hashMapOf("leftX" to 523.00, "leftY" to 647.00, "rightX" to 575.00, "rightY" to 659.00)
-    private val sw5TopFrame4: HashMap<String, Double> = hashMapOf("leftX" to 561.00, "leftY" to 707.00, "rightX" to 628.00, "rightY" to 564.00)
-    private val sw5TopFrame5: HashMap<String, Double> = hashMapOf("leftX" to 578.00, "leftY" to 741.00, "rightX" to 475.00, "rightY" to 551.00)
-    private val sw5TopFrame6: HashMap<String, Double> = hashMapOf("leftX" to 441.00, "leftY" to 700.00, "rightX" to 490.00, "rightY" to 627.00)
-    private val sw5TopFrame7: HashMap<String, Double> = hashMapOf("leftX" to 411.00, "leftY" to 671.00, "rightX" to 498.00, "rightY" to 571.00)
-    private val sw5Top: HashMap<Int, HashMap<String, Double>> = hashMapOf(0 to sw5TopFrame1, 1 to sw5TopFrame2, 2 to sw5TopFrame3, 3 to sw5TopFrame4, 4 to sw5TopFrame5, 5 to sw5TopFrame6, 6 to sw5TopFrame7)
-    private val swing5: HashMap<String, HashMap<Int, HashMap<String, Double>>> = hashMapOf("front" to sw5Front, "top" to sw5Top)
+        sumForcePaint.color = Color.YELLOW
+        sumForcePaint.strokeWidth = 10f
 
-    private val sw6FrontFrame1: HashMap<String, Double> = hashMapOf("leftX" to 417.00, "leftY" to 719.00, "rightX" to 504.00, "rightY" to 679.00)
-    private val sw6FrontFrame2: HashMap<String, Double> = hashMapOf("leftX" to 434.00, "leftY" to 551.00, "rightX" to 541.00, "rightY" to 827.00)
-    private val sw6FrontFrame3: HashMap<String, Double> = hashMapOf("leftX" to 477.00, "leftY" to 774.00, "rightX" to 591.00, "rightY" to 924.00)
-    private val sw6FrontFrame4: HashMap<String, Double> = hashMapOf("leftX" to 448.00, "leftY" to 851.00, "rightX" to 464.00, "rightY" to 486.00)
-    private val sw6FrontFrame5: HashMap<String, Double> = hashMapOf("leftX" to 466.00, "leftY" to 808.00, "rightX" to 377.00, "rightY" to 184.00)
-    private val sw6FrontFrame6: HashMap<String, Double> = hashMapOf("leftX" to 450.00, "leftY" to 644.00, "rightX" to 376.00, "rightY" to 221.00)
-    private val sw6FrontFrame7: HashMap<String, Double> = hashMapOf("leftX" to 406.00, "leftY" to 665.00, "rightX" to 549.00, "rightY" to 940.00)
-    private val sw6Front: HashMap<Int, HashMap<String, Double>> = hashMapOf(0 to sw6FrontFrame1, 1 to sw6FrontFrame2, 2 to sw6FrontFrame3, 3 to sw6FrontFrame4, 4 to sw6FrontFrame5, 5 to sw6FrontFrame6, 6 to sw6FrontFrame7)
-    private val sw6TopFrame1: HashMap<String, Double> = hashMapOf("leftX" to 447.00, "leftY" to 594.00, "rightX" to 534.00, "rightY" to 589.00)
-    private val sw6TopFrame2: HashMap<String, Double> = hashMapOf("leftX" to 464.00, "leftY" to 605.00, "rightX" to 571.00, "rightY" to 631.00)
-    private val sw6TopFrame3: HashMap<String, Double> = hashMapOf("leftX" to 507.00, "leftY" to 685.00, "rightX" to 621.00, "rightY" to 532.00)
-    private val sw6TopFrame4: HashMap<String, Double> = hashMapOf("leftX" to 478.00, "leftY" to 718.00, "rightX" to 494.00, "rightY" to 356.00)
-    private val sw6TopFrame5: HashMap<String, Double> = hashMapOf("leftX" to 496.00, "leftY" to 765.00, "rightX" to 407.00, "rightY" to 311.00)
-    private val sw6TopFrame6: HashMap<String, Double> = hashMapOf("leftX" to 480.00, "leftY" to 657.00, "rightX" to 406.00, "rightY" to 485.00)
-    private val sw6TopFrame7: HashMap<String, Double> = hashMapOf("leftX" to 436.00, "leftY" to 663.00, "rightX" to 579.00, "rightY" to 623.00)
-    private val sw6Top: HashMap<Int, HashMap<String, Double>> = hashMapOf(0 to sw6TopFrame1, 1 to sw6TopFrame2, 2 to sw6TopFrame3, 3 to sw6TopFrame4, 4 to sw6TopFrame5, 5 to sw6TopFrame6, 6 to sw6TopFrame7)
-    private val swing6: HashMap<String, HashMap<Int, HashMap<String, Double>>> = hashMapOf("front" to sw6Front, "top" to sw6Top)
+        val magLeft = calMag(leftForce.endXY.cood_x - leftForce.startXY.cood_x, panel - leftForce.endXY.cood_y )
+        val magRight = calMag(rightForce.endXY.cood_x - rightForce.startXY.cood_x, panel - rightForce.endXY.cood_y )
+        val magRatio = magLeft / (magLeft + magRight)
+        sumStartX =  rightStartX - (magRatio * (rightStartX - leftStartX))
+        sumForce.setStartXY(sumStartX, panel)
+        sumForce.setEndXY(sumStartX, panel)
 
-    private val swingFrame: HashMap<Int, HashMap<String, HashMap<Int, HashMap<String, Double>>>> = hashMapOf(0 to swing1, 1 to swing2, 2 to swing3, 3 to swing4, 4 to swing5, 5 to swing6)
-
-    init {
-        setBackground()
+        leftCyclePaint.color = Color.BLUE
+        rightCyclePaint.color = Color.RED
     }
 
-    internal fun switchFrame(frame : Int) {
-        curFrame = frame
-        setBackground()
+
+    override fun onSizeChanged(w: Int, h: Int, oldw: Int, oldh: Int) {
+        Log.d("Size", "onSizeChanged: $w $h $oldw $oldh")
+        if (w != oldw || h != oldh) {
+            mBitmap = Bitmap.createBitmap(w, h, Bitmap.Config.ARGB_8888)
+            mBitmap!!.eraseColor(Color.TRANSPARENT)
+            mCanvas = Canvas(mBitmap!!)
+        }
+        super.onSizeChanged(w, h, oldw, oldh)
+        initPosition(w, h)
+        configPaint()
+        globalWidth = w.toDouble()      //for changing between views
+        globalHeight = h.toDouble()     //for changing between views
     }
 
-    internal fun switchView(v : String) {
-        curView = v
-        forceView.setBase(curView)
-        setBackground()
+    override fun onWindowFocusChanged(hasFocus:Boolean) {
+        // values for swing 1 frame 1
+        val leftX = convertX(403.6)
+        val leftY = convertY(666.9)
+        val rightX = convertX(489.69)
+        val rightY = convertY(663.9)
+
+        val magLeft = calMag(leftX - leftStartX, panel - leftY )
+        val magRight = calMag(rightX - rightStartX, panel - rightY )
+        val magRatio = magLeft / (magLeft + magRight)
+        sumStartX =  rightStartX - (magRatio * (rightStartX - leftStartX))
+        sumForce.setStartXY(sumStartX, panel)
+        val sumX = sumStartX + (leftX - leftStartX) + (rightX - rightStartX)
+        val sumY = panel - ((panel - leftY) + (panel - rightY))
+        sumForce.setEndXY(sumX, sumY)
+        leftForce.setEndXY(leftX, leftY)
+        rightForce.setEndXY(rightX, rightY)
+        setSpinner(calSpeed(sumX, sumY))
+        invalidate()
     }
 
-    internal fun switchSwing(swing : Int) {
-        curFrame = 0
-        curSwing = swing
-        setBackground()
+    private fun initPosition(w: Int, h: Int) {
+        canvasWidth = w.toDouble()
+        canvasHeight = h.toDouble()
+        leftStartX = canvasWidth * 0.38
+        rightStartX = canvasWidth *0.58
+        panel = canvasHeight * 0.88
+        val magLeft = calMag(leftForce.endXY.cood_x - leftStartX, panel - leftForce.endXY.cood_y )
+        val magRight = calMag(rightForce.endXY.cood_x - rightStartX, panel - rightForce.endXY.cood_y )
+        val magRatio = magLeft / (magLeft + magRight)
+        sumStartX =  rightStartX - (magRatio * (rightStartX - leftStartX))
+        sumForce.setStartXY(sumStartX, panel)
+        configPaint()
     }
 
-    private fun setBackground() {
-        imgView.setImageResource(swingImg[curSwing]!![curView]!![curFrame])
-        forceView.draw(swingFrame[curSwing]!![curView]!![curFrame]!!)
+    override fun onDraw(canvas: Canvas) {
+        mCanvas!!.drawColor(0, PorterDuff.Mode.CLEAR)
+        /* drawing the left force */
+        mCanvas!!.drawLine(
+                (leftForce.startXY.cood_x).toFloat(),
+                (leftForce.startXY.cood_y).toFloat(),
+                (leftForce.endXY.cood_x).toFloat(),
+                (leftForce.endXY.cood_y).toFloat(),
+                leftForcePaint)
+
+        /* drawing the right force */
+        mCanvas!!.drawLine(
+                (rightForce.startXY.cood_x).toFloat(),
+                (rightForce.startXY.cood_y).toFloat(),
+                (rightForce.endXY.cood_x).toFloat(),
+                (rightForce.endXY.cood_y).toFloat(),
+                rightForcePaint)
+
+        /* drawing the sum force */
+        mCanvas!!.drawLine(
+                (sumForce.startXY.cood_x).toFloat(),
+                (sumForce.startXY.cood_y).toFloat(),
+                (sumForce.endXY.cood_x).toFloat(),
+                (sumForce.endXY.cood_y).toFloat(),
+                sumForcePaint)
+
+        /* drawing the left drag point */
+        mCanvas!!.drawCircle(
+                (leftForce.endXY.cood_x).toFloat(),
+                (leftForce.endXY.cood_y).toFloat(),
+                20f,
+                leftCyclePaint)
+
+        /* drawing the right drag point */
+        mCanvas!!.drawCircle(
+                (rightForce.endXY.cood_x).toFloat(),
+                (rightForce.endXY.cood_y).toFloat(),
+                20f,
+                rightCyclePaint)
+
+        canvas.drawBitmap(mBitmap!!, 0f, 0f, null)
+
+        setTextBox()                    //init the force boxes on open
+
+    }
+
+    internal fun draw(frame: HashMap<String, Double>) {
+
+        val leftX = convertX(frame["leftX"])
+        val leftY = convertY(frame["leftY"])
+        val rightX = convertX(frame["rightX"])
+        val rightY = convertY(frame["rightY"])
+
+        val magLeft = calMag(leftX - leftStartX, panel - leftY )
+        val magRight = calMag(rightX - rightStartX, panel - rightY )
+        val magRatio = magLeft / (magLeft + magRight)
+        sumStartX =  rightStartX - (magRatio * (rightStartX - leftStartX))
+        sumForce.setStartXY(sumStartX, panel)
+        val sumX = sumStartX + (leftX - leftStartX) + (rightX - rightStartX)
+        val sumY = panel - ((panel - leftY.toDouble()) + (panel - rightY))
+        sumForce.setEndXY(sumX, sumY)
+        leftForce.setEndXY(leftX, leftY)
+        rightForce.setEndXY(rightX, rightY)
+        setTextBox()
+        setSpinner(calSpeed(sumX, sumY))
+        invalidate()
+    }
+
+    internal fun setBase(v: String){
+        if (v == "top") {
+            initPosition(globalWidth.toInt(), (globalHeight*0.55).toInt())
+        } else {
+            initPosition(globalWidth.toInt(), globalHeight.toInt())
+        }
+    }
+
+    private fun draw(force: ForceLine, coord: Coordinates, draggedForce: String) {
+        force.setEndXY(coord.cood_x, coord.cood_y)
+
+        var magLeft: Double = 0.0
+        var magRight: Double = 0.0
+
+        if (draggedForce == "left") {
+            magLeft = calMag(coord.cood_x - leftStartX, panel - coord.cood_y)
+            magRight = calMag(rightForce.endXY.cood_x - rightForce.startXY.cood_x, panel - rightForce.startXY.cood_y)
+        }
+        else {
+            magLeft = calMag(leftForce.endXY.cood_x - leftForce.startXY.cood_x, leftForce.endXY.cood_y - leftForce.startXY.cood_y)
+            magRight = calMag(coord.cood_x - rightStartX, panel - coord.cood_y)
+        }
+
+        val magRatio = magLeft / (magLeft + magRight)
+        sumStartX =  rightStartX - (magRatio * (rightStartX - leftStartX))
+        sumForce.setStartXY(sumStartX, panel)
+
+        val sumX = sumStartX + (leftForce.endXY.cood_x - leftStartX) + (rightForce.endXY.cood_x - rightStartX)
+        val sumY = panel - ((panel - leftForce.endXY.cood_y) + (panel - rightForce.endXY.cood_y))
+        sumForce.setEndXY(sumX, sumY)
+        setTextBox()
+        setSpinner(calSpeed(sumX, sumY))
+        invalidate()
+    }
+
+    private fun convertX(x: Double?): Double {
+        return ((canvasWidth / 1000) * x!!)
+    }
+
+    private fun convertXBack(x: Double): Double {
+        return x / (canvasWidth / 1000)
+    }
+
+    private fun convertY(y: Double?): Double {
+        return ((canvasHeight / 1000) * y!!) - (canvasHeight * .12)
+    }
+
+    private fun convertYBack(y: Double): Double {
+        return (y + (canvasHeight * .12)) / (canvasHeight / 1000)
+    }
+
+
+    private fun calSpeed(x: Double, y: Double): Long {
+        val r = this.parent as ConstraintLayout
+        val speedVal = (((panel - leftForce.endXY.cood_y) * (sumStartX - leftStartX)) - ((panel - rightForce.endXY.cood_y) * (rightStartX - sumStartX))).toLong()
+        val frontalMomentText = r.findViewById<TextView>(R.id.editFrontal)
+        frontalMomentText.text = (speedVal / 100).toString()
+        moment = speedVal
+        val returnVal = (((panel * (sumStartX - leftStartX)).toLong() - abs(speedVal)) / 100.toLong())
+        if (returnVal <= 0)
+            return 0.01.toLong()
+        else return returnVal
+    }
+
+    private fun inRegion(touch: Coordinates, force: Coordinates): Boolean {
+        return abs(force.cood_x - touch.cood_x) < 40 && abs(force.cood_y - touch.cood_y) < 40
+    }
+
+    private fun inBitmap(touch: Coordinates): Boolean {
+        if ((touch.cood_y < 15) || (touch.cood_y > canvasHeight - 15))
+            return false
+        if ((touch.cood_x < 15) || (touch.cood_y > canvasWidth - 15))
+            return false
+        return true
+    }
+
+    override fun onTouchEvent(event: MotionEvent): Boolean {
+        val touchPoint: Coordinates
+        when (event.action) {
+            MotionEvent.ACTION_DOWN -> {
+                touchPoint = Coordinates(event.x.toDouble(), event.y.toDouble())
+                if (inRegion(touchPoint, leftForce.endXY)) {
+                    selectedForce = leftForce
+                } else if (inRegion(touchPoint, rightForce.endXY)) {
+                    selectedForce = rightForce
+                }
+            }
+            MotionEvent.ACTION_MOVE -> {
+                touchPoint = Coordinates(event.x.toDouble(), event.y.toDouble())
+                println("X: " + touchPoint.cood_x + " Y: " + touchPoint.cood_y)
+                if (selectedForce != null) {
+                    if (inBitmap(touchPoint)) {
+                        var draggedForce = ""
+                        if (selectedForce == leftForce)
+                            draggedForce = "left"
+                        else
+                            draggedForce = "right"
+
+
+                        draw(selectedForce!!, touchPoint, draggedForce)
+                    }
+                    else
+                        selectedForce = null
+                }
+            }
+            MotionEvent.ACTION_UP -> selectedForce = null
+        }
+        return true
+    }
+
+    private fun setTextBox() {
+        val r = this.parent as ConstraintLayout
+        val leftTextBox = (r.findViewById<TextView>(R.id.editLeftFoot))
+        val rightTextBox = r.findViewById<TextView>(R.id.editRightFoot)
+        val sumTextBox = r.findViewById<TextView>(R.id.editResultant)
+        val leftEndX = convertXBack(leftForce.endXY.cood_x)
+        val leftStartX = convertXBack(leftForce.startXY.cood_x)
+        val panelConv = convertYBack(panel)
+        val leftEndY = convertYBack(leftForce.endXY.cood_y)
+        val rightEndX = convertXBack(rightForce.endXY.cood_x)
+        val rightStartX = convertXBack(rightForce.startXY.cood_x)
+        val rightEndY = convertYBack(rightForce.endXY.cood_y)
+        val sumEndX = convertXBack(sumForce.endXY.cood_x)
+        val sumStartX = convertXBack(sumForce.startXY.cood_x)
+        val sumEndY = convertYBack(sumForce.endXY.cood_y)
+
+        leftTextBox.text = calMag(leftEndX - leftStartX, panelConv - leftEndY).toInt().toString()
+        rightTextBox.text = calMag(rightEndX - rightStartX ,panelConv - rightEndY).toInt().toString()
+        sumTextBox.text =   calMag(sumEndX - sumStartX,panelConv - sumEndY).toInt().toString()
+    }
+
+    private fun calMag(x : Double, y : Double): Double {
+        return Math.sqrt(x * x + y * y)
+    }
+
+    class ReverseInterpolator:Interpolator {
+        override fun getInterpolation(paramFloat:Float):Float {
+            return Math.abs(paramFloat - 1f)
+        }
+    }
+
+    private fun setSpinner(duration:Long) {
+        val r = this.parent as ConstraintLayout
+        spinnerAnimator = ObjectAnimator.ofFloat(r.findViewById(R.id.progressBar),
+                "rotation", 0f, 360f)
+        if (moment <= 0)
+        {
+            spinnerAnimator.interpolator = LinearInterpolator()
+        }
+        else
+            spinnerAnimator.interpolator = ReverseInterpolator()
+        spinnerAnimator.duration = duration
+        spinnerAnimator.repeatCount = ValueAnimator.INFINITE
+        spinnerAnimator.start()
     }
 }
