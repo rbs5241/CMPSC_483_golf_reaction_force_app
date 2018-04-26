@@ -68,6 +68,10 @@ constructor(context: Context, attrs: AttributeSet?, defStyleAttr: Int) : View(co
 
         sumForcePaint.color = Color.YELLOW
         sumForcePaint.strokeWidth = 10f
+        val magLeft = calMag(leftForce.endXY.cood_x - leftForce.startXY.cood_x, panel - leftForce.endXY.cood_y )
+        val magRight = calMag(rightForce.endXY.cood_x - rightForce.startXY.cood_x, panel - rightForce.endXY.cood_y )
+        val magRatio = magLeft / (magLeft + magRight)
+        sumStartX =  rightStartX - (magRatio * (rightStartX - leftStartX))
         sumForce.setStartXY(sumStartX, panel)
         sumForce.setEndXY(sumStartX, panel)
 
@@ -96,6 +100,12 @@ constructor(context: Context, attrs: AttributeSet?, defStyleAttr: Int) : View(co
         val leftY = convertY(666.9)
         val rightX = convertX(489.69)
         val rightY = convertY(663.9)
+
+        val magLeft = calMag(leftX - leftStartX, panel - leftY )
+        val magRight = calMag(rightX - rightStartX, panel - rightY )
+        val magRatio = magLeft / (magLeft + magRight)
+        sumStartX =  rightStartX - (magRatio * (rightStartX - leftStartX))
+        sumForce.setStartXY(sumStartX, panel)
         val sumX = sumStartX + (leftX - leftStartX) + (rightX - rightStartX)
         val sumY = panel - ((panel - leftY) + (panel - rightY))
         sumForce.setEndXY(sumX, sumY)
@@ -110,8 +120,12 @@ constructor(context: Context, attrs: AttributeSet?, defStyleAttr: Int) : View(co
         canvasHeight = h.toDouble()
         leftStartX = canvasWidth * 0.38
         rightStartX = canvasWidth *0.58
-        sumStartX = canvasWidth *0.48
         panel = canvasHeight * 0.88
+        val magLeft = calMag(leftForce.endXY.cood_x - leftStartX, panel - leftForce.endXY.cood_y )
+        val magRight = calMag(rightForce.endXY.cood_x - rightStartX, panel - rightForce.endXY.cood_y )
+        val magRatio = magLeft / (magLeft + magRight)
+        sumStartX =  rightStartX - (magRatio * (rightStartX - leftStartX))
+        sumForce.setStartXY(sumStartX, panel)
         configPaint()
     }
 
@@ -169,6 +183,11 @@ constructor(context: Context, attrs: AttributeSet?, defStyleAttr: Int) : View(co
         val rightY = convertY(frame["rightY"])
         var sumX = 0.0
         var sumY = 0.0
+        val magLeft = calMag(leftX - leftStartX, panel - leftY )
+        val magRight = calMag(rightX - rightStartX, panel - rightY )
+        val magRatio = magLeft / (magLeft + magRight)
+        sumStartX =  rightStartX - (magRatio * (rightStartX - leftStartX))
+        sumForce.setStartXY(sumStartX, panel)
 
         if (globalView == "front") {
             sumX = sumStartX + (leftX - leftStartX) + (rightX - rightStartX)
@@ -210,10 +229,27 @@ constructor(context: Context, attrs: AttributeSet?, defStyleAttr: Int) : View(co
         }
     }
 
-    private fun draw(force: ForceLine, coord: Coordinates) {
+    private fun draw(force: ForceLine, coord: Coordinates, draggedForce: String) {
         force.setEndXY(coord.cood_x, coord.cood_y)
         var sumX: Double
         var sumY: Double
+
+        var magLeft: Double = 0.0
+        var magRight: Double = 0.0
+
+        if (draggedForce == "left") {
+            magLeft = calMag(coord.cood_x - leftStartX, panel - coord.cood_y)
+            magRight = calMag(rightForce.endXY.cood_x - rightForce.startXY.cood_x, panel - rightForce.startXY.cood_y)
+        }
+        else {
+            magLeft = calMag(leftForce.endXY.cood_x - leftForce.startXY.cood_x, leftForce.endXY.cood_y - leftForce.startXY.cood_y)
+            magRight = calMag(coord.cood_x - rightStartX, panel - coord.cood_y)
+        }
+
+        val magRatio = magLeft / (magLeft + magRight)
+        sumStartX =  rightStartX - (magRatio * (rightStartX - leftStartX))
+        sumForce.setStartXY(sumStartX, panel)
+
         if(globalView == "front") {
             sumX = sumStartX + (leftForce.endXY.cood_x - leftStartX) + (rightForce.endXY.cood_x - rightStartX)
             sumY = panel - ((panel - leftForce.endXY.cood_y) + (panel - rightForce.endXY.cood_y))
@@ -284,8 +320,14 @@ constructor(context: Context, attrs: AttributeSet?, defStyleAttr: Int) : View(co
                 touchPoint = Coordinates(event.x.toDouble(), event.y.toDouble())
                 println("X: " + touchPoint.cood_x + " Y: " + touchPoint.cood_y)
                 if (selectedForce != null) {
-                    if (inBitmap(touchPoint))
-                        draw(selectedForce!!, touchPoint)
+                    if (inBitmap(touchPoint)) {
+                        var draggedForce = ""
+                        if (selectedForce == leftForce)
+                            draggedForce = "left"
+                        else
+                            draggedForce = "right"
+                        draw(selectedForce!!, touchPoint, draggedForce)
+                    }
                     else
                         selectedForce = null
                 }
