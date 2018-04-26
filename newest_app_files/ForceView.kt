@@ -238,12 +238,12 @@ constructor(context: Context, attrs: AttributeSet?, defStyleAttr: Int) : View(co
         var magRight: Double = 0.0
 
         if (draggedForce == "left") {
-            magLeft = calMag(coord.cood_x - leftStartX, panel - coord.cood_y)
-            magRight = calMag(rightForce.endXY.cood_x - rightForce.startXY.cood_x, panel - rightForce.startXY.cood_y)
+            magLeft = calMag(coord.cood_x - leftForce.startXY.cood_x, panel - coord.cood_y)
+            magRight = calMag(rightForce.endXY.cood_x - rightForce.startXY.cood_x, panel - rightForce.endXY.cood_y)
         }
         else {
-            magLeft = calMag(leftForce.endXY.cood_x - leftForce.startXY.cood_x, leftForce.endXY.cood_y - leftForce.startXY.cood_y)
-            magRight = calMag(coord.cood_x - rightStartX, panel - coord.cood_y)
+            magLeft = calMag(leftForce.endXY.cood_x - leftForce.startXY.cood_x, panel - leftForce.endXY.cood_y)
+            magRight = calMag(coord.cood_x - rightForce.startXY.cood_x, panel - coord.cood_y)
         }
 
         val magRatio = magLeft / (magLeft + magRight)
