@@ -13,6 +13,7 @@ import android.view.MotionEvent
 import android.view.View
 import android.view.animation.LinearInterpolator
 import android.view.animation.Interpolator
+import android.widget.Button
 import android.widget.TextView
 import java.lang.Math.abs
 import java.util.*
@@ -48,6 +49,7 @@ constructor(context: Context, attrs: AttributeSet?, defStyleAttr: Int) : View(co
     //for changing views
     private var globalWidth: Double = 0.0
     private var globalHeight: Double = 0.0
+    private var globalView: String = "front"
 
 
 
@@ -66,10 +68,6 @@ constructor(context: Context, attrs: AttributeSet?, defStyleAttr: Int) : View(co
 
         sumForcePaint.color = Color.YELLOW
         sumForcePaint.strokeWidth = 10f
-        val magLeft = calMag(leftForce.endXY.cood_x - leftForce.startXY.cood_x, panel - leftForce.endXY.cood_y )
-        val magRight = calMag(rightForce.endXY.cood_x - rightForce.startXY.cood_x, panel - rightForce.endXY.cood_y )
-        val magRatio = magLeft / (magLeft + magRight)
-        sumStartX =  rightStartX - (magRatio * (rightStartX - leftStartX))
         sumForce.setStartXY(sumStartX, panel)
         sumForce.setEndXY(sumStartX, panel)
 
@@ -98,12 +96,6 @@ constructor(context: Context, attrs: AttributeSet?, defStyleAttr: Int) : View(co
         val leftY = convertY(666.9)
         val rightX = convertX(489.69)
         val rightY = convertY(663.9)
-
-        val magLeft = calMag(leftX - leftStartX, panel - leftY )
-        val magRight = calMag(rightX - rightStartX, panel - rightY )
-        val magRatio = magLeft / (magLeft + magRight)
-        sumStartX =  rightStartX - (magRatio * (rightStartX - leftStartX))
-        sumForce.setStartXY(sumStartX, panel)
         val sumX = sumStartX + (leftX - leftStartX) + (rightX - rightStartX)
         val sumY = panel - ((panel - leftY) + (panel - rightY))
         sumForce.setEndXY(sumX, sumY)
@@ -118,12 +110,8 @@ constructor(context: Context, attrs: AttributeSet?, defStyleAttr: Int) : View(co
         canvasHeight = h.toDouble()
         leftStartX = canvasWidth * 0.38
         rightStartX = canvasWidth *0.58
+        sumStartX = canvasWidth *0.48
         panel = canvasHeight * 0.88
-        val magLeft = calMag(leftForce.endXY.cood_x - leftStartX, panel - leftForce.endXY.cood_y )
-        val magRight = calMag(rightForce.endXY.cood_x - rightStartX, panel - rightForce.endXY.cood_y )
-        val magRatio = magLeft / (magLeft + magRight)
-        sumStartX =  rightStartX - (magRatio * (rightStartX - leftStartX))
-        sumForce.setStartXY(sumStartX, panel)
         configPaint()
     }
 
@@ -174,19 +162,24 @@ constructor(context: Context, attrs: AttributeSet?, defStyleAttr: Int) : View(co
     }
 
     internal fun draw(frame: HashMap<String, Double>) {
+
         val leftX = convertX(frame["leftX"])
         val leftY = convertY(frame["leftY"])
         val rightX = convertX(frame["rightX"])
         val rightY = convertY(frame["rightY"])
+        var sumX = 0.0
+        var sumY = 0.0
 
-        val magLeft = calMag(leftX - leftStartX, panel - leftY )
-        val magRight = calMag(rightX - rightStartX, panel - rightY )
-        val magRatio = magLeft / (magLeft + magRight)
-        sumStartX =  rightStartX - (magRatio * (rightStartX - leftStartX))
-        sumForce.setStartXY(sumStartX, panel)
-        val sumX = sumStartX + (leftX - leftStartX) + (rightX - rightStartX)
-        val sumY = panel - ((panel - leftY.toDouble()) + (panel - rightY))
-        sumForce.setEndXY(sumX, sumY)
+        if (globalView == "front") {
+            sumX = sumStartX + (leftX - leftStartX) + (rightX - rightStartX)
+            sumY = panel - ((panel - leftY) + (panel - rightY))
+            sumForce.setEndXY(sumX, sumY)
+        } else {
+            sumX = sumStartX + (leftX - leftStartX) + (rightX - rightStartX)
+            sumY = 430 - ((430 - leftY) + (430 - rightY))
+            sumForce.setEndXY(sumX, sumY)
+        }
+
         leftForce.setEndXY(leftX, leftY)
         rightForce.setEndXY(rightX, rightY)
         setTextBox()
@@ -198,39 +191,38 @@ constructor(context: Context, attrs: AttributeSet?, defStyleAttr: Int) : View(co
         val r = this.parent as ConstraintLayout
         val leftForceTitle = (r.findViewById<TextView>(R.id.leftTitle))
         val rightForceTitle = (r.findViewById<TextView>(R.id.rightTitle))
+        val changeViewButton = (r.findViewById<Button>(R.id.changeViewButton))
         if (v == "top") {
-            initPosition(globalWidth.toInt(), (globalHeight*0.55).toInt())
+            //initPosition(globalWidth.toInt(), (globalHeight*0.55).toInt())
+            leftForce.setStartXY(450.00,430.00)
+            rightForce.setStartXY(600.00,430.00)
+            sumForce.setStartXY(525.00,430.00)
             leftForceTitle.text = resources.getString(R.string.leftFoot)
             rightForceTitle.text = resources.getString(R.string.rightFoot)
+            changeViewButton.text = resources.getString(R.string.front)
+            globalView = "top"
         } else {
             initPosition(globalWidth.toInt(), globalHeight.toInt())
             leftForceTitle.text = resources.getString(R.string.rightFoot)
             rightForceTitle.text = resources.getString(R.string.leftFoot)
+            changeViewButton.text = resources.getString(R.string.overhead)
+            globalView = "front"
         }
     }
 
-    private fun draw(force: ForceLine, coord: Coordinates, draggedForce: String) {
+    private fun draw(force: ForceLine, coord: Coordinates) {
         force.setEndXY(coord.cood_x, coord.cood_y)
-
-        var magLeft: Double = 0.0
-        var magRight: Double = 0.0
-
-        if (draggedForce == "left") {
-            magLeft = calMag(coord.cood_x - leftStartX, panel - coord.cood_y)
-            magRight = calMag(rightForce.endXY.cood_x - rightForce.startXY.cood_x, panel - rightForce.startXY.cood_y)
+        var sumX: Double
+        var sumY: Double
+        if(globalView == "front") {
+            sumX = sumStartX + (leftForce.endXY.cood_x - leftStartX) + (rightForce.endXY.cood_x - rightStartX)
+            sumY = panel - ((panel - leftForce.endXY.cood_y) + (panel - rightForce.endXY.cood_y))
+            sumForce.setEndXY(sumX, sumY)
+        } else { //top view
+            sumX = sumStartX + (leftForce.endXY.cood_x - leftStartX) + (rightForce.endXY.cood_x - rightStartX)
+            sumY = 430 - ((430 - leftForce.endXY.cood_y) + (430 - rightForce.endXY.cood_y))
+            sumForce.setEndXY(sumX, sumY)
         }
-        else {
-            magLeft = calMag(leftForce.endXY.cood_x - leftForce.startXY.cood_x, leftForce.endXY.cood_y - leftForce.startXY.cood_y)
-            magRight = calMag(coord.cood_x - rightStartX, panel - coord.cood_y)
-        }
-
-        val magRatio = magLeft / (magLeft + magRight)
-        sumStartX =  rightStartX - (magRatio * (rightStartX - leftStartX))
-        sumForce.setStartXY(sumStartX, panel)
-
-        val sumX = sumStartX + (leftForce.endXY.cood_x - leftStartX) + (rightForce.endXY.cood_x - rightStartX)
-        val sumY = panel - ((panel - leftForce.endXY.cood_y) + (panel - rightForce.endXY.cood_y))
-        sumForce.setEndXY(sumX, sumY)
         setTextBox()
         setSpinner(calSpeed(sumX, sumY))
         invalidate()
@@ -292,14 +284,8 @@ constructor(context: Context, attrs: AttributeSet?, defStyleAttr: Int) : View(co
                 touchPoint = Coordinates(event.x.toDouble(), event.y.toDouble())
                 println("X: " + touchPoint.cood_x + " Y: " + touchPoint.cood_y)
                 if (selectedForce != null) {
-                    if (inBitmap(touchPoint)) {
-                        var draggedForce = ""
-                        if (selectedForce == leftForce)
-                            draggedForce = "left"
-                        else
-                            draggedForce = "right"
-                        draw(selectedForce!!, touchPoint, draggedForce)
-                    }
+                    if (inBitmap(touchPoint))
+                        draw(selectedForce!!, touchPoint)
                     else
                         selectedForce = null
                 }
