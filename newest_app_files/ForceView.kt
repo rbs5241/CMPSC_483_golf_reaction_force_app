@@ -72,7 +72,10 @@ constructor(context: Context, attrs: AttributeSet?, defStyleAttr: Int) : View(co
         val magRight = calMag(rightForce.endXY.cood_x - rightForce.startXY.cood_x, panel - rightForce.endXY.cood_y )
         val magRatio = magLeft / (magLeft + magRight)
         sumStartX =  rightStartX - (magRatio * (rightStartX - leftStartX))
-        sumForce.setStartXY(sumStartX, panel)
+        if (globalView == "front")
+            sumForce.setStartXY(sumStartX, panel)
+        else
+            sumForce.setStartXY(sumStartX, 430.00)
         sumForce.setEndXY(sumStartX, panel)
 
         leftCyclePaint.color = Color.RED
@@ -105,7 +108,12 @@ constructor(context: Context, attrs: AttributeSet?, defStyleAttr: Int) : View(co
         val magRight = calMag(rightX - rightStartX, panel - rightY )
         val magRatio = magLeft / (magLeft + magRight)
         sumStartX =  rightStartX - (magRatio * (rightStartX - leftStartX))
-        sumForce.setStartXY(sumStartX, panel)
+
+        if (globalView == "front")
+            sumForce.setStartXY(sumStartX, panel)
+        else
+            sumForce.setStartXY(sumStartX, 430.00)
+
         val sumX = sumStartX + (leftX - leftStartX) + (rightX - rightStartX)
         val sumY = panel - ((panel - leftY) + (panel - rightY))
         sumForce.setEndXY(sumX, sumY)
@@ -125,7 +133,12 @@ constructor(context: Context, attrs: AttributeSet?, defStyleAttr: Int) : View(co
         val magRight = calMag(rightForce.endXY.cood_x - rightStartX, panel - rightForce.endXY.cood_y )
         val magRatio = magLeft / (magLeft + magRight)
         sumStartX =  rightStartX - (magRatio * (rightStartX - leftStartX))
-        sumForce.setStartXY(sumStartX, panel)
+
+        if (globalView == "front")
+            sumForce.setStartXY(sumStartX, panel)
+        else
+            sumForce.setStartXY(sumStartX, 430.00)
+
         configPaint()
     }
 
@@ -187,7 +200,11 @@ constructor(context: Context, attrs: AttributeSet?, defStyleAttr: Int) : View(co
         val magRight = calMag(rightX - rightStartX, panel - rightY )
         val magRatio = magLeft / (magLeft + magRight)
         sumStartX =  rightStartX - (magRatio * (rightStartX - leftStartX))
-        sumForce.setStartXY(sumStartX, panel)
+
+        if (globalView == "front")
+            sumForce.setStartXY(sumStartX, panel)
+        else
+            sumForce.setStartXY(sumStartX, 430.00)
 
         if (globalView == "front") {
             sumX = sumStartX + (leftX - leftStartX) + (rightX - rightStartX)
@@ -248,7 +265,10 @@ constructor(context: Context, attrs: AttributeSet?, defStyleAttr: Int) : View(co
 
         val magRatio = magLeft / (magLeft + magRight)
         sumStartX =  rightStartX - (magRatio * (rightStartX - leftStartX))
-        sumForce.setStartXY(sumStartX, panel)
+        if (globalView == "front")
+            sumForce.setStartXY(sumStartX, panel)
+        else
+            sumForce.setStartXY(sumStartX, 430.00)
 
         if(globalView == "front") {
             sumX = sumStartX + (leftForce.endXY.cood_x - leftStartX) + (rightForce.endXY.cood_x - rightStartX)
